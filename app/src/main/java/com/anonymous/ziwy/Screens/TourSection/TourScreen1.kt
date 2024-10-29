@@ -79,7 +79,7 @@ fun TourScreen1(tourNavController: NavHostController, mainNavController: NavCont
         ) {
             //skip button
             Text(
-                text = "Skip Tour >>" +"🇧🇪",
+                text = "Skip Tour >>",
                 color = orange,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,

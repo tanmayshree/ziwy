@@ -1,8 +1,20 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("plugin.serialization") version "1.9.0"
 //    alias(libs.plugins.compose.compiler)
+}
+
+val myKeysPropertiesFile = rootProject.file("mykeys.properties")
+val myKeysProperties = Properties()
+// Load properties if the file exists
+if (myKeysPropertiesFile.exists()) {
+    myKeysProperties.load(FileInputStream(myKeysPropertiesFile))
+} else {
+    println("mykeys.properties file not found.")
 }
 
 android {
@@ -20,6 +32,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "OPENAI_API_KEY", "${myKeysProperties["OPENAI_API_KEY"]}")
+        buildConfigField("String", "OTPLESS_KEY", "${myKeysProperties["OTPLESS_KEY"]}")
+        manifestPlaceholders["otpless_key"] = "${myKeysProperties["OTPLESS_KEY"]}"
     }
 
     buildTypes {
@@ -40,6 +56,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"

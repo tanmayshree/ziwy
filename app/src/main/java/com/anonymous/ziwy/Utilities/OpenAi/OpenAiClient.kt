@@ -1,5 +1,6 @@
 package com.anonymous.ziwy.Utilities.OpenAi
 
+import com.anonymous.ziwy.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -17,7 +18,7 @@ object OpenAiClient {
         .addInterceptor(loggingInterceptor)
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
-                .addHeader("Authorization", "Bearer $EXPO_PUBLIC_OPENAI_API_KEY")
+                .addHeader("Authorization", "Bearer ${BuildConfig.OPENAI_API_KEY}")
                 .build()
             chain.proceed(request)
         }

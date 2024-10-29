@@ -61,7 +61,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ZiwyTheme {
-
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     containerColor = white

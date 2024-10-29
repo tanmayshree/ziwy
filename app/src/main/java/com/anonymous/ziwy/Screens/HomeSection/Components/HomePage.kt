@@ -55,6 +55,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -162,6 +163,38 @@ private fun CouponsContainer(
     selectedProductFilter: MutableState<String?>,
     selectedBrandFilter: MutableState<String?>,
 ) {
+    val filteredList = state.couponsList
+        .filter { it.redeemed != true }
+        .filter {
+            it.expiryStatus == ZConstants.COUPON_IS_EXPIRING_SOON || !isExpiringSoonFilterEnabled.value
+        }
+        .filter {
+            selectedProductFilter.value == null || it.couponProduct?.contains(
+                selectedProductFilter.value
+            ) == true
+        }
+        .filter {
+            selectedBrandFilter.value == null || it.couponBrand == selectedBrandFilter.value
+        }
+
+    if (state.imageUri != null && state.imageUri != Uri.EMPTY) {
+
+    } else if (state.loadingScreenState == LoadingScreenState(true, ZConstants.FETCH_COUPONS)) {
+
+    } else if (filteredList.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                text = "Share your first coupon screenshot and show the world your savings game!",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Italic,
+                color = grey,
+                modifier = Modifier
+                    .padding(20.dp, 10.dp)
+            )
+        }
+    }
     LazyVerticalGrid(
         contentPadding = PaddingValues(horizontal = 16.dp),
         columns = GridCells.Fixed(2),
@@ -225,19 +258,6 @@ private fun CouponsContainer(
                 }
             }
         } else {
-            val filteredList = state.couponsList
-                .filter { it.redeemed != true }
-                .filter {
-                    it.expiryStatus == ZConstants.COUPON_IS_EXPIRING_SOON || !isExpiringSoonFilterEnabled.value
-                }
-                .filter {
-                    selectedProductFilter.value == null || it.couponProduct?.contains(
-                        selectedProductFilter.value
-                    ) == true
-                }
-                .filter {
-                    selectedBrandFilter.value == null || it.couponBrand == selectedBrandFilter.value
-                }
             items(filteredList) { item ->
                 val isCardFlipped = remember { mutableStateOf(false) }
                 AnimatedContent(
