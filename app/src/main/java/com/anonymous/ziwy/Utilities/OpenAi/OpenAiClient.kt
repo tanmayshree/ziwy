@@ -37,8 +37,6 @@ object OpenAiClient {
     }
 }
 
-const val EXPO_PUBLIC_OPENAI_API_KEY = "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"
-
 const val PROMPT = """
     Read this coupon to get the following information in JSON format:
     - **Coupon code**: Coupon code.
