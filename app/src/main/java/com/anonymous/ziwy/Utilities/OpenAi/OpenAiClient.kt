@@ -35,6 +35,7 @@ object OpenAiClient {
     val apiService: OpenAiService by lazy {
         retrofit.create(OpenAiService::class.java)
     }
+
 }
 
 const val PROMPT = """
