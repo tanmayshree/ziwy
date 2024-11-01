@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,16 +29,13 @@ import com.anonymous.ziwy.GenericComponents.TourSlidingRightArrow
 import com.anonymous.ziwy.R
 import com.anonymous.ziwy.Screens.RootComponent.NavigationItem
 import com.anonymous.ziwy.Utilities.ZColors.orange
+import com.anonymous.ziwy.Utilities.ZColors.white
 
 @Composable
 fun TourScreen2(tourNavController: NavHostController, mainNavController: NavController) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxSize()
-    ) {
-
-        Column {
+    Scaffold(
+        containerColor = white,
+        topBar = {
             Text(
                 text = "Share it with Ziwy!",
                 color = orange,
@@ -43,9 +44,40 @@ fun TourScreen2(tourNavController: NavHostController, mainNavController: NavCont
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(150.dp)
                     .padding(start = 20.dp, top = 50.dp, end = 20.dp, bottom = 50.dp)
             )
-
+        },
+        bottomBar = {
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                //skip button
+                Text(
+                    text = "Skip Tour >>",
+                    color = orange,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .alpha(0.8f)
+                        .clickable {
+                            mainNavController.popBackStack()
+                        }
+                )
+            }
+        }
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+                .verticalScroll(rememberScrollState())
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -69,26 +101,6 @@ fun TourScreen2(tourNavController: NavHostController, mainNavController: NavCont
                     tourNavController.navigate(NavigationItem.TourScreen3.route)
                 }
             }
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            //skip button
-            Text(
-                text = "Skip Tour >>",
-                color = orange,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(20.dp)
-                    .alpha(0.8f)
-                    .clickable {
-                        mainNavController.popBackStack()
-                    }
-            )
         }
     }
 }
