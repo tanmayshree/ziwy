@@ -17,6 +17,7 @@ object OpenAiClient {
     private val httpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
         .addInterceptor { chain ->
+            println("Adding Authorization header to request. API Key: ${BuildConfig.OPENAI_API_KEY}")
             val request = chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer ${BuildConfig.OPENAI_API_KEY}")
                 .build()
