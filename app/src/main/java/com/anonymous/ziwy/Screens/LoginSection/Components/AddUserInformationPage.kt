@@ -157,7 +157,7 @@ fun AddUserInformationPage(
                                 },
                         ) {
                             Text(
-                                text = "Sign In", fontSize = 24.sp,
+                                text = "Submit", fontSize = 24.sp,
                                 modifier = Modifier.padding(
                                     start = 10.dp,
                                     top = 12.dp,
