@@ -15,4 +15,4 @@
 local.properties
 mykeys.properties
 .ziwy_keystore.jks
-@ziwy__ziwy-keystore.bak.jks
+ziwy_keystore.pem
