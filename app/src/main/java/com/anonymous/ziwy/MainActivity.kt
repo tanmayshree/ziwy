@@ -2,11 +2,13 @@ package com.anonymous.ziwy
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -28,6 +31,9 @@ import com.otpless.dto.HeadlessResponse
 import com.otpless.main.OtplessManager
 import com.otpless.main.OtplessView
 import com.anonymous.ziwy.GenericComponents.ForceUpdateDialog
+import com.anonymous.ziwy.Notifications.PermissionManager
+import com.anonymous.ziwy.Notifications.createNotificationChannel
+import com.anonymous.ziwy.Notifications.scheduleDailyNotification
 import com.anonymous.ziwy.Screens.LoginSection.Models.LoginRequestModel
 import com.anonymous.ziwy.Screens.LoginSection.ViewModel.LoginViewModel
 import com.anonymous.ziwy.Screens.LoginSection.ViewModel.LoginViewModelFactory
@@ -48,12 +54,17 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var imageUris: Uri
 
+    // For Notifications
+    private lateinit var permissionManager: PermissionManager
+
 //    private val dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        permissionManager = PermissionManager(this)
 
         otplessView = OtplessManager.getInstance().getOtplessView(this)
         otplessView.initHeadless("195ZDBMFRHBVQ5NFI1KE")
@@ -99,6 +110,25 @@ class MainActivity : ComponentActivity() {
 
                         ForceUpdateDialog(isDialogVisible = isDialogVisible)
                         RootComponent(viewModel, state)
+
+                        // Notifications
+                        val context = LocalContext.current
+                        LaunchedEffect(Unit) {
+
+                            if (!permissionManager.hasNotificationPermission()) {
+                                notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                                //permissionManager.requestNotificationPermission(this@MainActivity)
+                            } else {
+                                if (permissionManager.hasExactAlarmPermission()) {
+                                    createNotificationChannel(context)
+                                    scheduleDailyNotification(context)
+                                } else {
+                                    permissionManager.requestExactAlarmPermission(this@MainActivity)
+                                    permissionManager.requestNotificationPermission(this@MainActivity)
+                                }
+                            }
+
+                        }
                     }
                 }
             }
@@ -202,6 +232,24 @@ class MainActivity : ComponentActivity() {
         }
         super.onBackPressed()
     }
+
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // Notification permission granted
+                if (permissionManager.hasExactAlarmPermission()) {
+                    createNotificationChannel(this)
+                    scheduleDailyNotification(this)
+                } else {
+                    permissionManager.requestExactAlarmPermission(this)
+                }
+            } else {
+                // Notification permission denied
+                // Handle accordingly
+            }
+        }
+
+
 
 //    override fun onNewIntent(intent: Intent) {
 //        if (otplessView != null) {
