@@ -4,6 +4,8 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Parcelable
 import android.util.Base64
@@ -37,7 +39,6 @@ import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 
-
 object Utils {
 
     @Composable
@@ -52,7 +53,7 @@ object Utils {
         )
     }
 
-    suspend fun handleImageProcessing(uri: String): String? {
+    /*suspend fun handleImageProcessing(uri: String): String? {
         return try {
             val file = File(uri)
             val fileInputStream =
@@ -70,9 +71,9 @@ object Utils {
             error.printStackTrace()
             null
         }
-    }
+    }*/
 
-    fun openUrlInBrowser(websiteUrl: String, context: Context) {
+    /*fun openUrlInBrowser(websiteUrl: String, context: Context) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(websiteUrl))
         if (intent.resolveActivity((context as MainActivity).packageManager) != null) {
             (context as MainActivity).startActivity(intent)
@@ -80,11 +81,11 @@ object Utils {
             Toast.makeText(
                 (context as MainActivity),
                 "No application can handle this request",
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_LONG
             )
                 .show()
         }
-    }
+    }*/
 
     fun handleSharingIntents(intent: Intent): Uri {
         when (intent.action) {
@@ -147,7 +148,7 @@ object Utils {
 
     }
 
-    fun parseApiResponseForUserDetails(jsonString: String): ApiResponseForUserData {
+    /*fun parseApiResponseForUserDetails(jsonString: String): ApiResponseForUserData {
         val jsonElement = Json.parseToJsonElement(jsonString).jsonObject
 
         // Check if the error key "message" exists in the JSON
@@ -156,12 +157,12 @@ object Utils {
         } else {
             Json.decodeFromString<SuccessResponseForUserData>(jsonString)
         }
-    }
+    }*/
 
-    fun parseOpenAiResponseForCouponData(jsonString: String): OpenAiImageDataModel {
+    /*fun parseOpenAiResponseForCouponData(jsonString: String): OpenAiImageDataModel {
 //        val jsonElement = Json.parseToJsonElement(jsonString).jsonObject
         return Json.decodeFromString<OpenAiImageDataModel>(jsonString)
-    }
+    }*/
 
     fun parseJsonForCountryList(jsonString: String): CountriesListModel {
 //        val jsonElement = Json.parseToJsonElement(jsonString).jsonObject
@@ -180,8 +181,8 @@ object Utils {
     fun fileUriToBase64(uri: Uri, resolver: ContentResolver): String {
         var encodedBase64 = ""
         try {
-            val bytes = readBytes(uri, resolver)
-            encodedBase64 = Base64.encodeToString(bytes, 0)
+            val bytes = compressImage(uri, resolver)
+            encodedBase64 = Base64.encodeToString(bytes, Base64.DEFAULT)
         } catch (e1: IOException) {
             e1.printStackTrace()
         }
@@ -219,6 +220,31 @@ object Utils {
         inputStream.close()
         // and then we can return your byte array.
         return byteBuffer.toByteArray()
+    }
+
+    @Throws(IOException::class)
+    private fun compressImage(
+        uri: Uri,
+        resolver: ContentResolver,
+        maxWidth: Int = 800,
+        maxHeight: Int = 800,
+        quality: Int = 70
+    ): ByteArray {
+        val inputStream =
+            resolver.openInputStream(uri) ?: throw IOException("Failed to open input stream")
+        val originalBitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+
+        val scaledBitmap = Bitmap.createScaledBitmap(
+            originalBitmap,
+            maxWidth.coerceAtMost(originalBitmap.width),
+            maxHeight.coerceAtMost(originalBitmap.height),
+            true
+        )
+
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream)
+        return byteArrayOutputStream.toByteArray()
     }
 
     fun checkDateDifference(targetDateString: String): Long? {
