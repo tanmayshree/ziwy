@@ -8,10 +8,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.widget.Toast
+import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainStore
+import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainViewModel
 import java.util.Calendar
 
-fun createNotificationChannel(context: Context) {
+fun createNotificationChannel(context: Context, mainViewModel: MainViewModel, mainState: MainStore) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val channelId = "daily_notification_channel"
         val channelName = "Expiry check Notifications"
@@ -27,12 +28,12 @@ fun createNotificationChannel(context: Context) {
 }
 
 // Function to schedule the daily notification
-fun scheduleDailyNotification(context: Context) {
+fun scheduleDailyNotification(context: Context, mainViewModel: MainViewModel, mainState: MainStore) {
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     scheduleNotification(context, alarmManager, 0, 23, 1)
-    scheduleNotification(context, alarmManager, 0, 24, 2)
-    scheduleNotification(context, alarmManager, 0, 25, 3)
+    scheduleNotification(context, alarmManager, 16, 58, 2)
+    scheduleNotification(context, alarmManager, 18, 58, 3)
 
 }
 

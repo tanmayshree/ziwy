@@ -2,7 +2,6 @@ package com.anonymous.ziwy
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -34,6 +33,9 @@ import com.anonymous.ziwy.GenericComponents.ForceUpdateDialog
 import com.anonymous.ziwy.Notifications.PermissionManager
 import com.anonymous.ziwy.Notifications.createNotificationChannel
 import com.anonymous.ziwy.Notifications.scheduleDailyNotification
+import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainStore
+import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainViewModel
+import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainViewModelFactory
 import com.anonymous.ziwy.Screens.LoginSection.Models.LoginRequestModel
 import com.anonymous.ziwy.Screens.LoginSection.ViewModel.LoginViewModel
 import com.anonymous.ziwy.Screens.LoginSection.ViewModel.LoginViewModelFactory
@@ -53,6 +55,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var viewModel: LoginViewModel
 
     private lateinit var imageUris: Uri
+
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var mainState: MainStore
 
     // For Notifications
     private lateinit var permissionManager: PermissionManager
@@ -112,6 +117,12 @@ class MainActivity : ComponentActivity() {
                         RootComponent(viewModel, state)
 
                         // Notifications
+                        mainViewModel = viewModel<MainViewModel>(
+                            key = "MainViewModel",
+                            factory = MainViewModelFactory(application)
+                        )
+                        mainState = mainViewModel.state.collectAsState().value
+
                         val context = LocalContext.current
                         LaunchedEffect(Unit) {
 
@@ -120,8 +131,8 @@ class MainActivity : ComponentActivity() {
                                 //permissionManager.requestNotificationPermission(this@MainActivity)
                             } else {
                                 if (permissionManager.hasExactAlarmPermission()) {
-                                    createNotificationChannel(context)
-                                    scheduleDailyNotification(context)
+                                    createNotificationChannel(context, mainViewModel, mainState)
+                                    scheduleDailyNotification(context, mainViewModel, mainState)
                                 } else {
                                     permissionManager.requestExactAlarmPermission(this@MainActivity)
                                     permissionManager.requestNotificationPermission(this@MainActivity)
@@ -238,8 +249,8 @@ class MainActivity : ComponentActivity() {
             if (isGranted) {
                 // Notification permission granted
                 if (permissionManager.hasExactAlarmPermission()) {
-                    createNotificationChannel(this)
-                    scheduleDailyNotification(this)
+                    createNotificationChannel(this, mainViewModel, mainState)
+                    scheduleDailyNotification(this, mainViewModel, mainState)
                 } else {
                     permissionManager.requestExactAlarmPermission(this)
                 }

@@ -117,6 +117,8 @@ object Utils {
     }
 
     suspend fun getUserDetailsFromPreferences(context: Context): PreferencesUserData {
+
+        val userDataSharedPref = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userName = withContext(Dispatchers.IO) {
             (context as MainActivity).readFromPreferences("username")
         }
