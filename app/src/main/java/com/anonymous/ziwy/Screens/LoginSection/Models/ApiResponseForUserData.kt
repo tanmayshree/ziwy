@@ -10,7 +10,9 @@ data class SuccessResponseForUserData(
     val notificationId: String? = null,
     val creationTime: String? = null,
     val userName: String? = null,
-    val primaryKey: String? = null,
+//    val primaryKey: String? = null,
+    val mobileNumber: String? = null,
+    val countryCode: String? = null,
     val email: String? = null,
     val gender: String? = null,
     val ageGroup: String? = null

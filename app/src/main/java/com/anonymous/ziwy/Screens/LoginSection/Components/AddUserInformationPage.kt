@@ -138,7 +138,7 @@ fun AddUserInformationPage(
                                             .makeText(
                                                 context as MainActivity,
                                                 "Please fill all the details!",
-                                                Toast.LENGTH_SHORT
+                                                Toast.LENGTH_LONG
                                             )
                                             .show()
                                         return@clickable

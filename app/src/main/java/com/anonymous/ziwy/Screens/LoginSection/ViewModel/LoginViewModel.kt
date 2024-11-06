@@ -11,7 +11,6 @@ import com.anonymous.ziwy.Screens.LoginSection.Models.LoginRequestModel
 import com.anonymous.ziwy.Screens.LoginSection.Models.SuccessResponseForUserData
 import com.anonymous.ziwy.Utilities.Retrofit.Repository
 import com.anonymous.ziwy.Utilities.Retrofit.Resource
-import com.anonymous.ziwy.Utilities.Utils
 import com.anonymous.ziwy.Utilities.ZConstants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -66,40 +65,45 @@ class LoginViewModel : ViewModel() {
                         }
 
                         is Resource.Success -> {
-                            val getParsedResponse = resource.data?.body?.let {
-                                Utils.parseApiResponseForUserDetails(
-                                    it
+                            val response = resource.data?.body
+
+                            response?.userName?.let {
+                                println("620555 - LoginViewModel.kt - getUserData - userName - $it")
+                                _state.value = _state.value.copy(
+                                    loadingScreenState = LoadingScreenState(
+                                        isLoading = false,
+                                        screen = ZConstants.GET_USER_DATA
+                                    ),
+                                    userData = SuccessResponseForUserData(
+                                        userName = response.userName,
+                                        email = response.email,
+                                        notificationId = response.notificationId,
+                                        creationTime = response.creationTime,
+//                                        primaryKey = response.primaryKey,
+                                        mobileNumber = response.mobileNumber,
+                                        countryCode = response.countryCode,
+                                        gender = response.gender,
+                                        ageGroup = response.ageGroup
+                                    ),
+                                    isLoginSuccess = true,
+                                    isNewUser = false,
+                                    token = responseWithToken
                                 )
-                            }
-
-                            when (getParsedResponse) {
-                                is SuccessResponseForUserData -> {
-                                    _state.value = _state.value.copy(
-                                        loadingScreenState = LoadingScreenState(
-                                            isLoading = false,
-                                            screen = ZConstants.GET_USER_DATA
-                                        ),
-                                        userData = getParsedResponse,
-                                        isLoginSuccess = true,
-                                        isNewUser = false,
-                                        token = responseWithToken
-                                    )
-                                }
-
-                                else -> {
-                                    _state.value = _state.value.copy(
-                                        loadingScreenState = LoadingScreenState(
-                                            isLoading = false,
-                                            screen = ZConstants.GET_USER_DATA
-                                        ),
-                                        isNewUser = true,
-                                        token = responseWithToken
-                                    )
-                                }
+                            } ?: run {
+                                println("620555 - LoginViewModel.kt - getUserData - userName - null")
+                                _state.value = _state.value.copy(
+                                    loadingScreenState = LoadingScreenState(
+                                        isLoading = false,
+                                        screen = ZConstants.GET_USER_DATA
+                                    ),
+                                    isNewUser = true,
+                                    token = responseWithToken
+                                )
                             }
                         }
 
                         is Resource.Error -> {
+                            println("620555 - LoginViewModel.kt - getUserData - Error - ${resource.message}")
                             _state.value = _state.value.copy(
                                 loadingScreenState = LoadingScreenState(
                                     isLoading = false,
@@ -134,13 +138,15 @@ class LoginViewModel : ViewModel() {
                             ),
                             isLoginSuccess = true,
                             userData = SuccessResponseForUserData(
-                                userName = resource.data?.body?.user?.userName,
-                                email = resource.data?.body?.user?.email,
-                                primaryKey = resource.data?.body?.user?.primaryKey,
-                                gender = resource.data?.body?.user?.gender,
-                                ageGroup = resource.data?.body?.user?.ageGroup,
-                                notificationId = resource.data?.body?.user?.notificationId,
-                                creationTime = resource.data?.body?.user?.creationTime
+                                userName = resource.data?.body?.userName,
+                                email = resource.data?.body?.email,
+//                                primaryKey = resource.data?.body?.primaryKey,
+                                mobileNumber = resource.data?.body?.mobileNumber,
+                                countryCode = resource.data?.body?.countryCode,
+                                gender = resource.data?.body?.gender,
+                                ageGroup = resource.data?.body?.ageGroup,
+                                notificationId = resource.data?.body?.notificationId,
+                                creationTime = resource.data?.body?.creationTime
                             ),
                             message = "User information added successfully"
                         )

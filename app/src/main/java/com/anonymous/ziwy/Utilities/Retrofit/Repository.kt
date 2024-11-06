@@ -4,6 +4,8 @@ import com.anonymous.ziwy.GenericModels.AppUpdateInfoResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.CouponsListResponseModel
+import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageRequestModel
+import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageResponseModel
 import com.anonymous.ziwy.Screens.LoginSection.Models.AddUserInfoRequestModel
 import com.anonymous.ziwy.Screens.LoginSection.Models.AddUserInfoResponseModel
 import com.anonymous.ziwy.Screens.LoginSection.Models.VerifyUserResponseModel
@@ -24,16 +26,26 @@ class Repository {
         val response = ApiResponseHandler.handleApiCall {
             RetrofitClient.apiService.getUserData(mobileNumber, countryCode)
         }
+        println("620555 Response: $response ${response.data}")
         emit(response)
     }
 
-    fun addUserInformation(addUserInfoRequestModel: AddUserInfoRequestModel): Flow<Resource<AddUserInfoResponseModel>> = flow {
-        emit(Resource.Loading())
-        val response = ApiResponseHandler.handleApiCall {
-            RetrofitClient.apiService.addUserInformation(addUserInfoRequestModel)
+    fun addUserInformation(addUserInfoRequestModel: AddUserInfoRequestModel): Flow<Resource<AddUserInfoResponseModel>> =
+        flow {
+            emit(Resource.Loading())
+            val response = ApiResponseHandler.handleApiCall {
+                RetrofitClient.apiService.addUserInformation(addUserInfoRequestModel)
+            }
+            if (response is Resource.Success) {
+                if (response.data?.statusCode != null && response.data.statusCode == 201) {
+                    emit(Resource.Success(response.data))
+                } else {
+                    emit(Resource.Error(response.data?.message ?: "Something went wrong!"))
+                }
+            } else {
+                emit(Resource.Error(response.message ?: "Something went wrong!"))
+            }
         }
-        emit(response)
-    }
 
     fun getCouponsList(
         mobileNumber: String?,
@@ -54,7 +66,9 @@ class Repository {
         }
     }
 
-    fun extractCoupon(payload: OpenAiRequestModel): Flow<Resource<OpenAiResponseModel>> = flow {
+    fun extractCoupon(
+        payload: OpenAiRequestModel
+    ): Flow<Resource<OpenAiResponseModel>> = flow {
         emit(Resource.Loading())
         val response = ApiResponseHandler.handleApiCall {
             OpenAiClient.apiService.extractCoupon(payload)
@@ -63,13 +77,15 @@ class Repository {
     }
 
     //addNewCoupon
-    fun addNewCoupon(coupon: AddCouponRequestModel): Flow<Resource<AddCouponResponseModel>> = flow {
+    fun addNewCoupon(
+        coupon: AddCouponRequestModel
+    ): Flow<Resource<AddCouponResponseModel>> = flow {
         emit(Resource.Loading())
         val response = ApiResponseHandler.handleApiCall {
             RetrofitClient.apiService.addNewCoupon(coupon)
         }
         if (response is Resource.Success) {
-            if (response.data?.statusCode != null && response.data.statusCode == 201) {
+            if (response.data?.statusCode != null && (response.data.statusCode == 201)) {
                 emit(Resource.Success(response.data))
             } else {
                 emit(Resource.Error(response.data?.message ?: "Something went wrong!"))
@@ -79,7 +95,9 @@ class Repository {
         }
     }
 
-    fun updateCoupon(coupon: AddCouponRequestModel): Flow<Resource<AddCouponResponseModel>> = flow {
+    fun updateCoupon(
+        coupon: AddCouponRequestModel
+    ): Flow<Resource<AddCouponResponseModel>> = flow {
         emit(Resource.Loading())
         val response = ApiResponseHandler.handleApiCall {
             RetrofitClient.apiService.updateCoupon(coupon)
@@ -110,4 +128,23 @@ class Repository {
             emit(Resource.Error(response.message ?: "Something went wrong!"))
         }
     }
+
+    fun extractCouponImage(
+        extractCouponRequestModel: ExtractCouponImageRequestModel
+    ): Flow<Resource<ExtractCouponImageResponseModel>> =
+        flow {
+            emit(Resource.Loading())
+            val response = ApiResponseHandler.handleApiCall {
+                RetrofitClient.apiService.extractCouponImage(extractCouponRequestModel)
+            }
+            if (response is Resource.Success) {
+                if (response.data != null) {
+                    emit(Resource.Success(response.data))
+                } else {
+                    emit(Resource.Error("Something went wrong!"))
+                }
+            } else {
+                emit(Resource.Error(response.message ?: "Something went wrong!"))
+            }
+        }
 }

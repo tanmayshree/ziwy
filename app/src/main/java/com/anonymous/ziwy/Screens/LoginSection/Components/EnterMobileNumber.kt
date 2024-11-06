@@ -288,7 +288,7 @@ fun EnterMobileNumber(
                                         .makeText(
                                             context,
                                             "Please enter valid phone number",
-                                            Toast.LENGTH_SHORT
+                                            Toast.LENGTH_LONG
                                         )
                                         .show()
                                     return@clickable
