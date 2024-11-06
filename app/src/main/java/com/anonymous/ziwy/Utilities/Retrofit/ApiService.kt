@@ -4,6 +4,8 @@ import com.anonymous.ziwy.GenericModels.AppUpdateInfoResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.CouponsListResponseModel
+import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageRequestModel
+import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageResponseModel
 import com.anonymous.ziwy.Screens.LoginSection.Models.AddUserInfoRequestModel
 import com.anonymous.ziwy.Screens.LoginSection.Models.AddUserInfoResponseModel
 import com.anonymous.ziwy.Screens.LoginSection.Models.VerifyUserResponseModel
@@ -49,4 +51,9 @@ interface ApiService {
     //get app update info
     @GET("getAppUpdateInfo")
     suspend fun getAppUpdateInfo(): Response<AppUpdateInfoResponseModel>
+
+    @POST("coupon-extraction-image")
+    suspend fun extractCouponImage(
+        @Body extractCouponRequestModel: ExtractCouponImageRequestModel
+    ): Response<ExtractCouponImageResponseModel>
 }
