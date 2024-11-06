@@ -3,6 +3,7 @@ package com.anonymous.ziwy.Screens.HomeSection.ViewModel
 import android.app.Application
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.anonymous.ziwy.GenericModels.LoadingScreenState
@@ -112,6 +113,7 @@ class MainViewModel(
                 }
             }
         }
+
     }
 
     /*fun extractCoupon(context: Context, imageUri: Uri, payload: OpenAiRequestModel) {
