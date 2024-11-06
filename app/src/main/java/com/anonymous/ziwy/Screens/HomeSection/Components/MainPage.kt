@@ -23,17 +23,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anonymous.ziwy.MainActivity
+import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainViewModel
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainViewModelFactory
 import com.anonymous.ziwy.Screens.RootComponent.NavigationItem
-import com.anonymous.ziwy.Utilities.ZColors.transparent
-import com.anonymous.ziwy.Utilities.OpenAi.Content
-import com.anonymous.ziwy.Utilities.OpenAi.ImageUrl
-import com.anonymous.ziwy.Utilities.OpenAi.Message
-import com.anonymous.ziwy.Utilities.OpenAi.OpenAiRequestModel
-import com.anonymous.ziwy.Utilities.OpenAi.PROMPT
-import com.anonymous.ziwy.Utilities.OpenAi.ResponseFormat
 import com.anonymous.ziwy.Utilities.Utils.fileUriToBase64
+import com.anonymous.ziwy.Utilities.ZColors.transparent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,33 +52,14 @@ fun MainPage(navController: NavHostController, imageUri: Uri?, onLogout: () -> U
         if (imageUri != null && imageUri != Uri.EMPTY) {
             CoroutineScope(Dispatchers.IO).launch {
                 println("620555 Image: $imageUri")
-                viewModel.extractCoupon(
+                viewModel.extractCouponImage(
                     context = context,
                     imageUri = imageUri,
-                    payload = OpenAiRequestModel(
-                        model = "gpt-4o",
-                        messages = listOf(
-                            Message(
-                                role = "user",
-                                content = listOf(
-                                    Content(
-                                        type = "image_url",
-                                        image_url = ImageUrl(
-                                            url = "data:image/jpeg;base64," + fileUriToBase64(
-                                                uri = imageUri,
-                                                resolver = context.contentResolver
-                                            )
-                                        )
-                                    ),
-                                    Content(
-                                        type = "text",
-                                        text = PROMPT
-                                    )
-                                )
-                            )
-                        ),
-                        max_tokens = 300,
-                        response_format = ResponseFormat(type = "json_object")
+                    payload = ExtractCouponImageRequestModel(
+                        fileUriToBase64(
+                            uri = imageUri,
+                            resolver = context.contentResolver
+                        )
                     )
                 )
             }
@@ -96,7 +72,8 @@ fun MainPage(navController: NavHostController, imageUri: Uri?, onLogout: () -> U
 
     LaunchedEffect(key1 = state.message) {
         if (state.message.isNullOrEmpty()) return@LaunchedEffect
-        Toast.makeText(context as MainActivity, state.message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(context as MainActivity, state.message, Toast.LENGTH_LONG).show()
+        viewModel.clearMessage()
     }
 
     Scaffold(
