@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
-class NotificationReceiver: BroadcastReceiver() {
+class NotificationReceiver : BroadcastReceiver() {
 
     private val repository = Repository()
     //private lateinit var couponList: List<Coupon>
@@ -34,21 +34,59 @@ class NotificationReceiver: BroadcastReceiver() {
         val permissionManager = PermissionManager(context)
         if (permissionManager.hasNotificationPermission()) {
 
-            val mobileNumber = "7667484399"
-            val countryCode = "91"
+
+//            val mobileNumber = "7667484399"
+//            val countryCode = "91"
 
             CoroutineScope(Dispatchers.IO).launch {
+//                val userDetails = Utils.getUserDetailsFromPreferences(context)
 
-                val couponResource = fetchCouponsList(mobileNumber, countryCode)
+                val couponResource = fetchCouponsList("6205556957", "91")
 
-                withContext(Dispatchers.Main) {
-                    if (couponResource != null && processCouponsToCheckExpiry(couponResource)) {
-                        print("meranaamsurajhai:::::::: got the expiry prompt")
-                        val expiryPrompt = "Your coupons will expire soon! Claim them now to take advantage of the discounts."
-                        showNotification(context, expiryPrompt)
-                        rescheduleForNextDay(context, intent)
+                couponResource.forEach {
+                    it.expiryDate?.let { date ->
+                        Utils.checkDateDifference(date)?.let { daysDifference ->
+                            println("620555 expiry $daysDifference")
+                            when {
+                                (daysDifference <= 1L) -> {
+                                    showNotification(
+                                        context,
+                                        "Your ${it.couponBrand} coupon is expiring in 1 day. Click now to redeem."
+                                    )
+                                }
+
+                                (daysDifference <= 2L) -> {
+                                    showNotification(
+                                        context,
+                                        "Your ${it.couponBrand} coupon is expiring in 2 days. Click now to redeem."
+                                    )
+                                }
+
+                                (daysDifference <= 5L) -> {
+                                    showNotification(
+                                        context,
+                                        "Your ${it.couponBrand} coupon is expiring in 5 days. Click now to redeem."
+                                    )
+                                }
+
+                                else -> {
+                                    showNotification(
+                                        context,
+                                        "later on expire"
+                                    )
+                                }
+                            }
+                        } ?: ZConstants.COUPON_IS_VALID
                     }
                 }
+//                withContext(Dispatchers.Main) {
+//                    if (processCouponsToCheckExpiry(couponResource)) {
+//                        print("meranaamsurajhai:::::::: got the expiry prompt")
+//                        val expiryPrompt = "Your coupons will expire soon! Claim them now to take advantage of the discounts."
+//                        showNotification(context, expiryPrompt)
+//                        rescheduleForNextDay(context, intent)
+//                    }
+//                }
             }
 
         } else {
@@ -60,10 +98,10 @@ class NotificationReceiver: BroadcastReceiver() {
 
         val coupons = couponListResponse
         val currentTime = Calendar.getInstance().timeInMillis
-        val twoDaysLater = currentTime + (2*24*60*60*1000)
+        val twoDaysLater = currentTime + (2 * 24 * 60 * 60 * 1000)
 
-        for (coupon in coupons){
-            val expiryDate =coupon.expiryDate
+        for (coupon in coupons) {
+            val expiryDate = coupon.expiryDate
             if (expiryDate != null) {
                 // Convert expiry date to timestamp (in milliseconds)
                 val expiryTimestamp = convertDateToTimestamp(expiryDate)
@@ -102,12 +140,15 @@ class NotificationReceiver: BroadcastReceiver() {
 
         // Create a pending intent
         val pendingIntent = PendingIntent.getActivity(
-            context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            context,
+            0,
+            notificationIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ziwy_logo)
-            .setContentTitle("Coupons Expiring")
+            .setContentTitle("Looking for some discounts?")
             .setContentText(expiryPrompt)  // Show Prompt here
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
@@ -133,7 +174,10 @@ class NotificationReceiver: BroadcastReceiver() {
 
         val rescheduleIntent = Intent(context, NotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
-            context, requestCode, rescheduleIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            context,
+            requestCode,
+            rescheduleIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         // Schedule the exact time for the next day
@@ -145,7 +189,7 @@ class NotificationReceiver: BroadcastReceiver() {
     }
 
     suspend fun fetchCouponsList(mobileNumber: String?, countryCode: String?): List<Coupon> {
-        var newList : List<Coupon> = emptyList()
+        var newList: List<Coupon> = emptyList()
         CoroutineScope(Dispatchers.Main).launch {
             repository.getCouponsList(mobileNumber, countryCode).collect { resource ->
                 when (resource) {
