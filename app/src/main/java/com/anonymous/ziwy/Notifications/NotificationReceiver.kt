@@ -19,7 +19,6 @@ import com.anonymous.ziwy.Utilities.Utils
 import com.anonymous.ziwy.Utilities.ZConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
@@ -27,23 +26,17 @@ import java.util.Calendar
 class NotificationReceiver : BroadcastReceiver() {
 
     private val repository = Repository()
-    //private lateinit var couponList: List<Coupon>
-
 
     override fun onReceive(context: Context, intent: Intent) {
         val permissionManager = PermissionManager(context)
         if (permissionManager.hasNotificationPermission()) {
-
-
-//            val mobileNumber = "7667484399"
-//            val countryCode = "91"
 
             CoroutineScope(Dispatchers.IO).launch {
 //                val userDetails = Utils.getUserDetailsFromPreferences(context)
 
                 val couponResource = fetchCouponsList("6205556957", "91")
 
-                couponResource.forEach {
+                couponResource.forEachIndexed { index, it ->
                     it.expiryDate?.let { date ->
                         Utils.checkDateDifference(date)?.let { daysDifference ->
                             println("620555 expiry $daysDifference")
@@ -51,42 +44,39 @@ class NotificationReceiver : BroadcastReceiver() {
                                 (daysDifference <= 1L) -> {
                                     showNotification(
                                         context,
-                                        "Your ${it.couponBrand} coupon is expiring in 1 day. Click now to redeem."
+                                        "Your ${it.couponBrand} coupon is expiring in 1 day. Click now to redeem.",
+                                        index
                                     )
                                 }
 
                                 (daysDifference <= 2L) -> {
                                     showNotification(
                                         context,
-                                        "Your ${it.couponBrand} coupon is expiring in 2 days. Click now to redeem."
+                                        "Your ${it.couponBrand} coupon is expiring in 2 days. Click now to redeem.",
+                                        index
                                     )
                                 }
 
                                 (daysDifference <= 5L) -> {
                                     showNotification(
                                         context,
-                                        "Your ${it.couponBrand} coupon is expiring in 5 days. Click now to redeem."
+                                        "Your ${it.couponBrand} coupon is expiring in 5 days. Click now to redeem.",
+                                        index
                                     )
                                 }
 
                                 else -> {
                                     showNotification(
                                         context,
-                                        "later on expire"
+                                        "later on expire",
+                                        index
                                     )
                                 }
                             }
-                        } ?: ZConstants.COUPON_IS_VALID
+                        }
                     }
                 }
-//                withContext(Dispatchers.Main) {
-//                    if (processCouponsToCheckExpiry(couponResource)) {
-//                        print("meranaamsurajhai:::::::: got the expiry prompt")
-//                        val expiryPrompt = "Your coupons will expire soon! Claim them now to take advantage of the discounts."
-//                        showNotification(context, expiryPrompt)
-//                        rescheduleForNextDay(context, intent)
-//                    }
-//                }
+                rescheduleForNextDay(context, intent)
             }
 
         } else {
@@ -127,9 +117,9 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun showNotification(context: Context, expiryPrompt: String) {
+    private fun showNotification(context: Context, expiryPrompt: String, index: Int) {
         val channelId = "daily_notification_channel"
-        val notificationId = 1
+        val notificationId = index
 
         print("meranaamsurajhai:::::::: received expiry prompt")
 
@@ -190,17 +180,15 @@ class NotificationReceiver : BroadcastReceiver() {
 
     suspend fun fetchCouponsList(mobileNumber: String?, countryCode: String?): List<Coupon> {
         var newList: List<Coupon> = emptyList()
-        CoroutineScope(Dispatchers.Main).launch {
+
+        withContext(Dispatchers.IO) {
             repository.getCouponsList(mobileNumber, countryCode).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-
-                        println("620555 MainViewModel fetchCouponsList Loading...")
-                        Log.d("meranaamsurajhai", "loading api response ${resource.data}")
+                        println("Loading...")  // You can add logging if needed
                     }
 
                     is Resource.Success -> {
-
                         val couponsList = resource.data?.body?.map {
                             it.copy(
                                 expiryStatus = it.expiryDate?.let { date ->
@@ -216,21 +204,18 @@ class NotificationReceiver : BroadcastReceiver() {
                         } ?: emptyList()
 
                         newList = couponsList
-
-                        println("620555 MainViewModel fetchCouponsList Success ${resource.data}")
-                        Log.d("meranaamsurajhai", "got api response ${resource.data}")
+                        println("620555 NotificationReceiver Success ${resource.data}")
                     }
 
                     is Resource.Error -> {
-                        println("620555 MainViewModel fetchCouponsList Error ${resource.message}")
-                        Log.d("meranaamsurajhai", "failed api response ${resource.data}")
+                        println("620555 NotificationReceiver Error ${resource.message}")
                     }
-
                 }
             }
         }
 
+        println("620555 NotificationReceiver NewList $newList")
         return newList
-
     }
+
 }

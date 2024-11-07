@@ -33,7 +33,7 @@ fun scheduleDailyNotification(context: Context, mainViewModel: MainViewModel, ma
 
     scheduleNotification(context, alarmManager, 0, 23, 1)
     scheduleNotification(context, alarmManager, 16, 58, 2)
-    scheduleNotification(context, alarmManager, 18, 58, 3)
+    scheduleNotification(context, alarmManager, 22, 54, 3)
 
 }
 
