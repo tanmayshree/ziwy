@@ -42,7 +42,7 @@ fun RootComponent(viewModel: LoginViewModel, state: LoginStore) {
 
     LaunchedEffect(key1 = state.message) {
         if (state.message.isNullOrEmpty()) return@LaunchedEffect
-        Toast.makeText(context as MainActivity, state.message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(context as MainActivity, state.message, Toast.LENGTH_LONG).show()
     }
 
     LaunchedEffect(key1 = state.isLoginSuccess) {

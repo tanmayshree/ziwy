@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.anonymous.ziwy.MainActivity
+import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainStore
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainViewModel
 import com.anonymous.ziwy.Utilities.ZColors.orange
@@ -56,39 +57,20 @@ fun UploadPage(navController: NavHostController, viewModel: MainViewModel, state
         if (it != null && it != Uri.EMPTY) {
             CoroutineScope(Dispatchers.IO).launch {
                 println("620555 Base64 Image: $it")
-                viewModel.extractCoupon(
+                viewModel.extractCouponImage(
                     context = context,
                     imageUri = it,
-                    payload = OpenAiRequestModel(
-                        model = "gpt-4o",
-                        messages = listOf(
-                            Message(
-                                role = "user",
-                                content = listOf(
-                                    Content(
-                                        type = "image_url",
-                                        image_url = ImageUrl(
-                                            url = "data:image/jpeg;base64," + fileUriToBase64(
-                                                uri = it,
-                                                resolver = context.contentResolver
-                                            )
-                                        )
-                                    ),
-                                    Content(
-                                        type = "text",
-                                        text = PROMPT
-                                    )
-                                )
-                            )
-                        ),
-                        max_tokens = 300,
-                        response_format = ResponseFormat(type = "json_object")
+                    payload = ExtractCouponImageRequestModel(
+                        fileUriToBase64(
+                            uri = it,
+                            resolver = context.contentResolver
+                        )
                     )
                 )
             }
             navController.popBackStack()
         } else {
-            Toast.makeText(context as MainActivity, "No image selected", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context as MainActivity, "No image selected", Toast.LENGTH_LONG).show()
         }
 
     }

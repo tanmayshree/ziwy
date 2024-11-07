@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class AddCouponResponseModel(
     val statusCode: Int? = null,
     val message: String? = null,
-    val couponID: String? = null,
+//    val couponID: String? = null,
     val body: Coupon? = null
 )

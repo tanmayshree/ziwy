@@ -8,7 +8,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.anonymous.ziwy.GenericModels.LoadingScreenState
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponRequestModel
-import com.anonymous.ziwy.Utilities.OpenAi.OpenAiRequestModel
+import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageRequestModel
+import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageResponseModel
 import com.anonymous.ziwy.Utilities.Retrofit.Repository
 import com.anonymous.ziwy.Utilities.Retrofit.Resource
 import com.anonymous.ziwy.Utilities.Utils
@@ -30,6 +31,12 @@ class MainViewModel(
     fun setImageUri(uri: Uri) {
         _state.value = _state.value.copy(
             imageUri = uri
+        )
+    }
+
+    fun clearMessage() {
+        _state.value = _state.value.copy(
+            message = null
         )
     }
 
@@ -109,7 +116,7 @@ class MainViewModel(
 
     }
 
-    fun extractCoupon(context: Context, imageUri: Uri, payload: OpenAiRequestModel) {
+    /*fun extractCoupon(context: Context, imageUri: Uri, payload: OpenAiRequestModel) {
         viewModelScope.launch {
             repository.extractCoupon(payload).collect { resource ->
                 when (resource) {
@@ -158,6 +165,81 @@ class MainViewModel(
                                         expiryDate = it.expiry_date,
                                         redeemed = false,
                                         minSpend = it.spend?.toIntOrNull(),
+                                        couponSource = null
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            loadingScreenState = LoadingScreenState(
+                                isLoading = false,
+                                screen = ZConstants.EXTRACT_COUPON
+                            ),
+                            imageUri = null,
+                            message = resource.message
+                        )
+                        println("620555 MainViewModel extractCoupon Error ${resource.message}")
+                    }
+                }
+            }
+        }
+    }*/
+
+    fun extractCouponImage(
+        context: Context,
+        imageUri: Uri,
+        payload: ExtractCouponImageRequestModel
+    ) {
+        viewModelScope.launch {
+            repository.extractCouponImage(payload).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            isLoading = true,
+                            loadingScreenState = LoadingScreenState(
+                                isLoading = true,
+                                screen = ZConstants.EXTRACT_COUPON,
+                            ),
+                            imageUri = imageUri
+                        )
+                        println("620555 MainViewModel extractCoupon Loading...")
+                    }
+
+                    is Resource.Success -> {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            loadingScreenState = LoadingScreenState(
+                                isLoading = false,
+                                screen = ZConstants.EXTRACT_COUPON
+                            ),
+//                            message = "Coupon extracted successfully"
+                        )
+                        val couponData = resource.data ?: ExtractCouponImageResponseModel()
+                        println("620555 MainViewModel extractCoupon Success ${resource.data}")
+                        if (couponData.couponCode.isNullOrEmpty() or couponData.couponBrand.isNullOrEmpty() or couponData.couponOffer.isNullOrEmpty()) {
+                            _state.value = _state.value.copy(
+                                message = "Please check if the coupon code and brand names are clearly visible.",
+                                imageUri = null
+                            )
+                        } else {
+                            val userDetails = Utils.getUserDetailsFromPreferences(context)
+                            couponData.let {
+                                addNewCoupon(
+                                    AddCouponRequestModel(
+                                        mobileNumber = userDetails.phoneNumber,
+                                        countryCode = userDetails.countryCode,
+                                        couponCode = it.couponCode,
+                                        userName = userDetails.username,
+                                        couponBrand = it.couponBrand,
+                                        couponProduct = it.couponProduct,
+                                        couponOffer = it.couponOffer,
+                                        expiryDate = it.expiryDate,
+                                        redeemed = false,
+                                        minSpend = it.minSpend?.toIntOrNull(),
                                         couponSource = null
                                     )
                                 )
