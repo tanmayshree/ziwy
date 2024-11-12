@@ -112,6 +112,7 @@ class MainViewModel(
                 }
             }
         }
+
     }
 
     /*fun extractCoupon(context: Context, imageUri: Uri, payload: OpenAiRequestModel) {

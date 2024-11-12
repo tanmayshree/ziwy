@@ -1,4 +1,4 @@
-package com.anonymous.ziwy.Screens.RootComponent
+package com.anonymous.ziwy.Screens.RootComponent.Components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

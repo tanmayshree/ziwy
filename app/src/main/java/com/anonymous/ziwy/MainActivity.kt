@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,25 +18,29 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.otpless.dto.HeadlessRequest
-import com.otpless.dto.HeadlessResponse
-import com.otpless.main.OtplessManager
-import com.otpless.main.OtplessView
 import com.anonymous.ziwy.GenericComponents.ForceUpdateDialog
+import com.anonymous.ziwy.Notifications.PermissionManager
+import com.anonymous.ziwy.Notifications.createNotificationChannel
+import com.anonymous.ziwy.Notifications.scheduleDailyNotification
 import com.anonymous.ziwy.Screens.LoginSection.Models.LoginRequestModel
 import com.anonymous.ziwy.Screens.LoginSection.ViewModel.LoginViewModel
 import com.anonymous.ziwy.Screens.LoginSection.ViewModel.LoginViewModelFactory
-import com.anonymous.ziwy.Screens.RootComponent.RootComponent
+import com.anonymous.ziwy.Screens.RootComponent.Components.RootComponent
 import com.anonymous.ziwy.Utilities.Utils
 import com.anonymous.ziwy.Utilities.Utils.handleSharingIntents
 import com.anonymous.ziwy.Utilities.ZColors.white
 import com.anonymous.ziwy.ui.theme.ZiwyTheme
+import com.otpless.dto.HeadlessRequest
+import com.otpless.dto.HeadlessResponse
+import com.otpless.main.OtplessManager
+import com.otpless.main.OtplessView
 import kotlinx.coroutines.flow.first
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -48,12 +53,17 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var imageUris: Uri
 
+    // For Notifications
+    private lateinit var permissionManager: PermissionManager
+
 //    private val dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        permissionManager = PermissionManager(this)
 
         otplessView = OtplessManager.getInstance().getOtplessView(this)
         otplessView.initHeadless("195ZDBMFRHBVQ5NFI1KE")
@@ -98,7 +108,26 @@ class MainActivity : ComponentActivity() {
                         }
 
                         ForceUpdateDialog(isDialogVisible = isDialogVisible)
-                        RootComponent(viewModel, state)
+                        RootComponent(viewModel, state, intent)
+
+                        // Notifications
+                        val context = LocalContext.current
+                        LaunchedEffect(Unit) {
+
+                            if (!permissionManager.hasNotificationPermission()) {
+                                notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                                //permissionManager.requestNotificationPermission(this@MainActivity)
+                            } else {
+                                if (permissionManager.hasExactAlarmPermission()) {
+                                    createNotificationChannel(context)
+                                    scheduleDailyNotification(context)
+                                } else {
+                                    permissionManager.requestExactAlarmPermission(this@MainActivity)
+                                    permissionManager.requestNotificationPermission(this@MainActivity)
+                                }
+                            }
+
+                        }
                     }
                 }
             }
@@ -118,12 +147,12 @@ class MainActivity : ComponentActivity() {
     suspend fun readFromPreferences(key: String): String? {
         val dataStoreKey = stringPreferencesKey(key)
         val preferences = dataStore.data.first()
-        println("620555 Read from preferences: $key: ${preferences[dataStoreKey]}")
+//        println("620555 Read from preferences: $key: ${preferences[dataStoreKey]}")
         return preferences[dataStoreKey]
     }
 
     fun startLogin(loginRequestModel: LoginRequestModel) {
-        println("620555 Start login with phone number: ${loginRequestModel.phoneNumber}")
+//        println("620555 Start login with phone number: ${loginRequestModel.phoneNumber}")
         val request = HeadlessRequest()
         request.setPhoneNumber("91", loginRequestModel.phoneNumber)
         otplessView.startHeadless(request, this::onHeadlessCallback)
@@ -135,7 +164,7 @@ class MainActivity : ComponentActivity() {
                 "INITIATE" -> {
                     // notify that headless authentication has been initiated
                     val responseWithToken = response.response
-                    println("620555 Headless authentication initiated: $responseWithToken")
+//                    println("620555 Headless authentication initiated: $responseWithToken")
                     viewModel.setLoginStatus(
                         isLoading = true,
                         isLoginSuccess = false,
@@ -147,19 +176,19 @@ class MainActivity : ComponentActivity() {
                     // notify that verification is completed
                     // and this is notified just before "ONETAP" final response
                     val responseWithToken = response.response
-                    println("620555 Verification completed: $responseWithToken")
+//                    println("620555 Verification completed: $responseWithToken")
                 }
 
                 "OTP_AUTO_READ" -> {
                     val otp = response.response?.optString("otp")
                     // auto read otp
-                    println("620555 Auto read otp: $otp")
+//                    println("620555 Auto read otp: $otp")
                 }
 
                 "ONETAP" -> {
                     // final response with token
                     val responseWithToken = response.response
-                    println("620555 Final response with token: $responseWithToken")
+//                    println("620555 Final response with token: $responseWithToken")
 //                    viewModel.setLoginStatus(
 //                        isLoading = false,
 //                        isLoginSuccess = true,
@@ -178,15 +207,14 @@ class MainActivity : ComponentActivity() {
                 else -> {
                     // else case
                     val responseWithToken = response.response
-                    println("620555 ELse response: ${response.responseType} $responseWithToken")
+//                    println("620555 ELse response: ${response.responseType} $responseWithToken")
                 }
             }
 
         } else {
             // handle error
             val error = response.response?.optString("errorMessage")
-
-            println("620555 Error: $error")
+//            println("620555 Error: $error")
         }
     }
 
@@ -202,6 +230,24 @@ class MainActivity : ComponentActivity() {
         }
         super.onBackPressed()
     }
+
+    private val notificationPermissionLauncher = registerForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Notification permission granted
+            if (permissionManager.hasExactAlarmPermission()) {
+                createNotificationChannel(this)
+                scheduleDailyNotification(this)
+            } else {
+                permissionManager.requestExactAlarmPermission(this)
+            }
+        } else {
+            // Notification permission denied
+            // Handle accordingly
+        }
+    }
+
 
 //    override fun onNewIntent(intent: Intent) {
 //        if (otplessView != null) {
