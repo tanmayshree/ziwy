@@ -105,6 +105,7 @@ fun ApprovalPage(
                             .clip(RoundedCornerShape(40.dp))
                             .clickable {
                                 loginNavController.popBackStack()
+                                viewModel.clearStates()
                             }
                     ) {
                         Text(

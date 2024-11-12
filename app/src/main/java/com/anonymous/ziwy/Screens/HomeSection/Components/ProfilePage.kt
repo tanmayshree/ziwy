@@ -210,15 +210,3 @@ fun ProfilePage(
 
 
 }
-
-
-//@Preview
-//@Composable
-//private fun Test() {
-//    ProfilePage(
-//        navController = rememberNavController(),
-//        viewModel = viewModel(),
-//        state = MainStore(),
-//        onLogout = {}
-//    )
-//}

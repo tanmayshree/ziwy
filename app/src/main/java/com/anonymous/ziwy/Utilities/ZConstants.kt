@@ -14,4 +14,5 @@ object ZConstants {
     const val GET_USER_DATA = "GET_USER_DATA"
     const val ADD_USER_INFO = "ADD_USER_INFO"
     const val APP_UPDATE_INFO = "APP_UPDATE_INFO"
+    const val EXPIRY_NOTIFICATION = "EXPIRY_NOTIFICATION"
 }

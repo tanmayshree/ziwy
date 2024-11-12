@@ -27,6 +27,12 @@ class LoginViewModel : ViewModel() {
         _state.value = LoginStore()
     }
 
+    fun clearMessage() {
+        _state.value = _state.value.copy(
+            message = null
+        )
+    }
+
     fun sendLoginRequest(loginRequestModel: LoginRequestModel, context: Context) {
         (context as MainActivity).startLogin(loginRequestModel)
     }

@@ -13,7 +13,8 @@ enum class Screen {
     TOUR_PAGE,
     TOUR_SCREEN_1,
     TOUR_SCREEN_2,
-    TOUR_SCREEN_3
+    TOUR_SCREEN_3,
+    COUPON_DETAIL_PAGE
 }
 
 sealed class NavigationItem(val route: String) {
@@ -30,4 +31,5 @@ sealed class NavigationItem(val route: String) {
     data object TourScreen1 : NavigationItem(Screen.TOUR_SCREEN_1.name)
     data object TourScreen2 : NavigationItem(Screen.TOUR_SCREEN_2.name)
     data object TourScreen3 : NavigationItem(Screen.TOUR_SCREEN_3.name)
+    data object CouponDetailPage : NavigationItem(Screen.COUPON_DETAIL_PAGE.name)
 }

@@ -9,28 +9,30 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Parcelable
 import android.util.Base64
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import com.anonymous.ziwy.GenericModels.AppUpdateInfoResponseModel
 import com.anonymous.ziwy.GenericModels.CountriesListModel
 import com.anonymous.ziwy.GenericModels.PreferencesUserData
 import com.anonymous.ziwy.MainActivity
-import com.anonymous.ziwy.Screens.LoginSection.Models.ApiResponseForUserData
-import com.anonymous.ziwy.Screens.LoginSection.Models.ErrorResponseForUserData
-import com.anonymous.ziwy.Screens.LoginSection.Models.SuccessResponseForUserData
-import com.anonymous.ziwy.Utilities.OpenAi.OpenAiImageDataModel
+import com.anonymous.ziwy.Utilities.ZColors.grey
+import com.anonymous.ziwy.Utilities.ZColors.lightGrey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -118,6 +120,7 @@ object Utils {
     }
 
     suspend fun getUserDetailsFromPreferences(context: Context): PreferencesUserData {
+
         val userName = withContext(Dispatchers.IO) {
             (context as MainActivity).readFromPreferences("username")
         }
@@ -228,7 +231,7 @@ object Utils {
         resolver: ContentResolver,
         maxWidth: Int = 800,
         maxHeight: Int = 800,
-        quality: Int = 70
+        quality: Int = 50
     ): ByteArray {
         val inputStream =
             resolver.openInputStream(uri) ?: throw IOException("Failed to open input stream")
@@ -334,5 +337,19 @@ object Utils {
             e.printStackTrace()
             null
         }
+    }
+
+    @Composable
+    fun transitionColor(): Color {
+        val infiniteTransition = rememberInfiniteTransition(label = "")
+        val color by infiniteTransition.animateColor(
+            initialValue = lightGrey,
+            targetValue = grey,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1000, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            ), label = ""
+        )
+        return color
     }
 }
