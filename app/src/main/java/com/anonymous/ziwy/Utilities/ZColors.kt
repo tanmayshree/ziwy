@@ -12,4 +12,5 @@ object ZColors {
     val black = Color(0xFF000000)
     val darkGrey = Color(0xFF4A4A4A)
     val transparent = Color(0x00000000)
+    val blue = Color(0xFF3F63F2)
 }

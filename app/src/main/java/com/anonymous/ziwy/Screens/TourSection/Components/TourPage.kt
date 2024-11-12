@@ -1,4 +1,4 @@
-package com.anonymous.ziwy.Screens.TourSection
+package com.anonymous.ziwy.Screens.TourSection.Components
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween

@@ -1,4 +1,4 @@
-package com.anonymous.ziwy.Screens.TourSection
+package com.anonymous.ziwy.Screens.TourSection.Components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

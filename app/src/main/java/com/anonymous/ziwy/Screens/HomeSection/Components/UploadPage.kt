@@ -33,22 +33,20 @@ import com.anonymous.ziwy.MainActivity
 import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainStore
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainViewModel
+import com.anonymous.ziwy.Utilities.Utils.fileUriToBase64
 import com.anonymous.ziwy.Utilities.ZColors.orange
 import com.anonymous.ziwy.Utilities.ZColors.transparent
 import com.anonymous.ziwy.Utilities.ZColors.white
-import com.anonymous.ziwy.Utilities.OpenAi.Content
-import com.anonymous.ziwy.Utilities.OpenAi.ImageUrl
-import com.anonymous.ziwy.Utilities.OpenAi.Message
-import com.anonymous.ziwy.Utilities.OpenAi.OpenAiRequestModel
-import com.anonymous.ziwy.Utilities.OpenAi.PROMPT
-import com.anonymous.ziwy.Utilities.OpenAi.ResponseFormat
-import com.anonymous.ziwy.Utilities.Utils.fileUriToBase64
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun UploadPage(navController: NavHostController, viewModel: MainViewModel, state: MainStore) {
+fun UploadPage(
+    navController: NavHostController,
+    viewModel: MainViewModel,
+    state: MainStore
+) {
     val result = remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {

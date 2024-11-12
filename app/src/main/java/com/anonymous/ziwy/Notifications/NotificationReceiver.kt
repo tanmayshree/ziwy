@@ -6,10 +6,10 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.anonymous.ziwy.GenericModels.NotificationIntentData
 import com.anonymous.ziwy.MainActivity
 import com.anonymous.ziwy.R
 import com.anonymous.ziwy.Screens.HomeSection.Models.Coupon
@@ -17,6 +17,7 @@ import com.anonymous.ziwy.Utilities.Retrofit.Repository
 import com.anonymous.ziwy.Utilities.Retrofit.Resource
 import com.anonymous.ziwy.Utilities.Utils
 import com.anonymous.ziwy.Utilities.ZConstants
+import com.anonymous.ziwy.dataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,49 +29,63 @@ class NotificationReceiver : BroadcastReceiver() {
     private val repository = Repository()
 
     override fun onReceive(context: Context, intent: Intent) {
+
+        val requestCode = intent.getIntExtra("requestCode", 0)
+
         val permissionManager = PermissionManager(context)
+
         if (permissionManager.hasNotificationPermission()) {
 
-            CoroutineScope(Dispatchers.IO).launch {
-//                val userDetails = Utils.getUserDetailsFromPreferences(context)
+            CoroutineScope(Dispatchers.Main).launch {
+                val userDetails = getUserDetailsFromPreferences(context.dataStore)
 
-                val couponResource = fetchCouponsList("6205556957", "91")
+                val couponResource = fetchCouponsList(
+                    mobileNumber = userDetails.phoneNumber,
+                    countryCode = userDetails.countryCode
+                )
 
-                couponResource.forEachIndexed { index, it ->
+                couponResource.filter { it.redeemed != true }.forEachIndexed { index, it ->
                     it.expiryDate?.let { date ->
                         Utils.checkDateDifference(date)?.let { daysDifference ->
                             println("620555 expiry $daysDifference")
+
                             when {
+                                (daysDifference < 0L) -> {
+                                    println("620555 NotificationReceiver Coupon has expired")
+                                }
+
                                 (daysDifference <= 1L) -> {
                                     showNotification(
-                                        context,
-                                        "Your ${it.couponBrand} coupon is expiring in 1 day. Click now to redeem.",
-                                        index
+                                        context = context,
+                                        expiryPrompt = "Your ${it.couponBrand} coupon is expiring in 1 day. Click now to redeem.",
+                                        notificationId = index,
+                                        requestCode = requestCode,
+                                        couponId = it.couponID
                                     )
                                 }
 
                                 (daysDifference <= 2L) -> {
                                     showNotification(
-                                        context,
-                                        "Your ${it.couponBrand} coupon is expiring in 2 days. Click now to redeem.",
-                                        index
+                                        context = context,
+                                        expiryPrompt = "Your ${it.couponBrand} coupon is expiring in 2 days. Click now to redeem.",
+                                        notificationId = index,
+                                        requestCode = requestCode,
+                                        couponId = it.couponID
                                     )
                                 }
 
                                 (daysDifference <= 5L) -> {
                                     showNotification(
-                                        context,
-                                        "Your ${it.couponBrand} coupon is expiring in 5 days. Click now to redeem.",
-                                        index
+                                        context = context,
+                                        expiryPrompt = "Your ${it.couponBrand} coupon is expiring in 5 days. Click now to redeem.",
+                                        notificationId = index,
+                                        requestCode = requestCode,
+                                        couponId = it.couponID
                                     )
                                 }
 
                                 else -> {
-                                    showNotification(
-                                        context,
-                                        "later on expire",
-                                        index
-                                    )
+                                    println("620555 NotificationReceiver Coupon is not expiring soon")
                                 }
                             }
                         }
@@ -84,54 +99,32 @@ class NotificationReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun processCouponsToCheckExpiry(couponListResponse: List<Coupon>): Boolean {
-
-        val coupons = couponListResponse
-        val currentTime = Calendar.getInstance().timeInMillis
-        val twoDaysLater = currentTime + (2 * 24 * 60 * 60 * 1000)
-
-        for (coupon in coupons) {
-            val expiryDate = coupon.expiryDate
-            if (expiryDate != null) {
-                // Convert expiry date to timestamp (in milliseconds)
-                val expiryTimestamp = convertDateToTimestamp(expiryDate)
-                if (expiryTimestamp != null && expiryTimestamp in currentTime..twoDaysLater) {
-                    print("meranaamsurajhai:::::::: TRUE ${coupon}")
-                    return true
-                }
-            }
-        }
-        print("meranaamsurajhai:::::::: FALSE")
-        return false
-    }
-
-    private fun convertDateToTimestamp(expiryDate: String): Long? {
-        return try {
-            val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
-            val date = dateFormat.parse(expiryDate)
-            date?.time
-        } catch (e: Exception) {
-            Log.e("NotificationReceiver", "Error parsing expiry date: $expiryDate", e)
-            null
-        }
-    }
-
     @SuppressLint("MissingPermission")
-    private fun showNotification(context: Context, expiryPrompt: String, index: Int) {
+    private fun showNotification(
+        context: Context,
+        expiryPrompt: String,
+        notificationId: Int,
+        requestCode: Int,
+        couponId: String?
+    ) {
         val channelId = "daily_notification_channel"
-        val notificationId = index
-
-        print("meranaamsurajhai:::::::: received expiry prompt")
 
         // Create an intent to open MainActivity when the notification is clicked
         val notificationIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(
+                "notificationIntentData",
+                NotificationIntentData(
+                    context = ZConstants.EXPIRY_NOTIFICATION,
+                    contextId = couponId
+                )
+            )
         }
 
         // Create a pending intent
         val pendingIntent = PendingIntent.getActivity(
             context,
-            0,
+            notificationId,
             notificationIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -152,29 +145,38 @@ class NotificationReceiver : BroadcastReceiver() {
     @SuppressLint("ScheduleExactAlarm")
     private fun rescheduleForNextDay(context: Context, intent: Intent) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val requestCode = intent.getIntExtra("requestCode", 0)
 
+        val requestCode = intent.getIntExtra("requestCode", 0)
+        val hours = intent.getIntExtra("hours", 0)
+        val minutes = intent.getIntExtra("minutes", 0)
+
+        println("620555 NotificationReceiver Rescheduling for next day at $hours:$minutes,$requestCode")
         // Set the calendar for the next day at the same time
         val calendar = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_YEAR, 1)
-            set(Calendar.HOUR_OF_DAY, get(Calendar.HOUR_OF_DAY))
-            set(Calendar.MINUTE, get(Calendar.MINUTE))
+            add(Calendar.DAY_OF_YEAR, 1)  // Move to the next day
+            set(Calendar.HOUR_OF_DAY, hours)
+            set(Calendar.MINUTE, minutes)
             set(Calendar.SECOND, 0)
         }
 
-        val rescheduleIntent = Intent(context, NotificationReceiver::class.java)
+        val rescheduleIntent = Intent(context, NotificationReceiver::class.java).apply {
+            putExtra("hours", hours)
+            putExtra("minutes", minutes)
+            putExtra("requestCode", requestCode)
+        }
+
         val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            requestCode,
-            rescheduleIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            /* context = */ context,
+            /* requestCode = */ requestCode,
+            /* intent = */ rescheduleIntent,
+            /* flags = */ PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         // Schedule the exact time for the next day
         alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            pendingIntent
+            /* type = */ AlarmManager.RTC_WAKEUP,
+            /* triggerAtMillis = */ calendar.timeInMillis,
+            /* operation = */ pendingIntent
         )
     }
 
