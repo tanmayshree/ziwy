@@ -26,7 +26,8 @@ fun ZTextField(hintText: String, value: String, onValueChange: (String) -> Unit)
     Surface(
         color = white,
         shape = RoundedCornerShape(10.dp),
-        shadowElevation = 1.dp,
+        shadowElevation = 2.dp,
+        tonalElevation = 5.dp
     ) {
         Row(
             modifier = Modifier
