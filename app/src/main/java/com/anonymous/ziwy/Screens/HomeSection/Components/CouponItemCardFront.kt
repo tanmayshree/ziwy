@@ -42,19 +42,19 @@ fun CouponItemCardFront(
     onCouponClick: (String) -> Unit,
 ) {
 
-    val containerColor = when (item.expiryStatus) {
+    val containerColor = if (item.redeemed == true) grey else when (item.expiryStatus) {
         ZConstants.COUPON_HAS_EXPIRED -> grey
         ZConstants.COUPON_IS_EXPIRING_SOON -> blue
         else -> ZColors.orange
     }
 
-    val textColor = when (item.expiryStatus) {
+    val textColor = if (item.redeemed == true) black else when (item.expiryStatus) {
         ZConstants.COUPON_HAS_EXPIRED -> black
         ZConstants.COUPON_IS_EXPIRING_SOON -> white
         else -> white
     }
 
-    val viewDetailsColor = when (item.expiryStatus) {
+    val viewDetailsColor = if (item.redeemed == true) black else when (item.expiryStatus) {
         ZConstants.COUPON_HAS_EXPIRED -> black
         else -> containerColor
     }

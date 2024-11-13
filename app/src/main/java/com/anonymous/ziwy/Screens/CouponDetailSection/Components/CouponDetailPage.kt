@@ -157,17 +157,17 @@ fun CouponDetailPage(navController: NavHostController, couponId: String?) {
         ) {
             val coupon = state.couponsList.firstOrNull { it.couponID == couponId }
             if (coupon != null) {
-                val cardColor = when (coupon.expiryStatus) {
+                val cardColor = if(coupon.redeemed == true) grey else when (coupon.expiryStatus) {
                     ZConstants.COUPON_HAS_EXPIRED -> grey
                     else -> blue
                 }
 
-                val detailsSectionColor = when (coupon.expiryStatus) {
+                val detailsSectionColor = if(coupon.redeemed == true) grey else when (coupon.expiryStatus) {
                     ZConstants.COUPON_HAS_EXPIRED -> grey
                     else -> orange
                 }
 
-                val textColor = when (coupon.expiryStatus) {
+                val textColor = if(coupon.redeemed == true) black else when (coupon.expiryStatus) {
                     ZConstants.COUPON_HAS_EXPIRED -> black
                     else -> white
                 }
@@ -193,6 +193,7 @@ fun CouponDetailPage(navController: NavHostController, couponId: String?) {
                             contentDescription = "Coupon Image",
                             contentScale = ContentScale.FillWidth,
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .alpha(0.9f)
                                 .height(70.dp)
                         )

@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.anonymous.ziwy.Utilities.ZColors.blue
 import com.anonymous.ziwy.Utilities.ZColors.orange
 import com.anonymous.ziwy.Utilities.ZColors.white
 
@@ -33,7 +34,8 @@ fun ZTextFieldWithDropDown(hintText: String, value: String, onClick: () -> Unit)
     Surface(
         color = white,
         shape = RoundedCornerShape(10.dp),
-        shadowElevation = 1.dp,
+        shadowElevation = 2.dp,
+        tonalElevation = 5.dp,
         modifier = Modifier.clickable {
             onClick()
         }
@@ -69,7 +71,7 @@ fun ZTextFieldWithDropDown(hintText: String, value: String, onClick: () -> Unit)
                             if (value.isEmpty()) {
                                 Text(
                                     text = hintText,
-                                    color = orange,
+                                    color = blue,
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Medium,
                                     modifier = Modifier,
