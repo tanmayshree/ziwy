@@ -61,9 +61,10 @@ import com.anonymous.ziwy.Screens.RootComponent.NavigationItem
 import com.anonymous.ziwy.Utilities.CountriesListJson
 import com.anonymous.ziwy.Utilities.Utils
 import com.anonymous.ziwy.Utilities.ZColors.black
+import com.anonymous.ziwy.Utilities.ZColors.blue
+import com.anonymous.ziwy.Utilities.ZColors.blue_5p
 import com.anonymous.ziwy.Utilities.ZColors.darkGrey
 import com.anonymous.ziwy.Utilities.ZColors.grey
-import com.anonymous.ziwy.Utilities.ZColors.lightBlueTransparent
 import com.anonymous.ziwy.Utilities.ZColors.lightGrey
 import com.anonymous.ziwy.Utilities.ZColors.orange
 import com.anonymous.ziwy.Utilities.ZColors.white
@@ -94,7 +95,7 @@ fun EnterMobileNumber(
         }
     }
     Surface(
-        color = lightBlueTransparent,
+        color = blue_5p,
         modifier = Modifier
             .pointerInput(Unit) {
                 detectTapGestures {
@@ -115,7 +116,7 @@ fun EnterMobileNumber(
         ) {
             Image(
                 painterResource(id = R.drawable.ziwy_logo),
-                contentDescription = "Home",
+                contentDescription = "Ziwy logo",
                 modifier = Modifier
                     .size(160.dp),
             )
@@ -124,11 +125,11 @@ fun EnterMobileNumber(
                 text = "Never Miss a Deal!",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = orange
+                color = blue
             )
 
             Image(
-                painterResource(id = R.drawable.people_on_login),
+                painterResource(id = R.drawable.digital_ads),
                 contentDescription = "Home",
                 modifier = Modifier
                     .size(240.dp),

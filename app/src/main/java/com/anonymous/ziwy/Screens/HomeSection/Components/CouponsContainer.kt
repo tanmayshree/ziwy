@@ -47,7 +47,7 @@ fun CouponsContainer(
     onCouponClick: (String) -> Unit,
 ) {
     val filteredList = state.couponsList
-        .filter { it.redeemed != true }
+//        .filter { it.redeemed != true } // uncomment this line to hide redeemed coupons
         .filter {
             it.expiryStatus == ZConstants.COUPON_IS_EXPIRING_SOON || !isExpiringSoonFilterEnabled.value
         }

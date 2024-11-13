@@ -36,6 +36,8 @@ import com.anonymous.ziwy.MainActivity
 import com.anonymous.ziwy.Screens.LoginSection.Models.AddUserInfoRequestModel
 import com.anonymous.ziwy.Screens.LoginSection.ViewModel.LoginStore
 import com.anonymous.ziwy.Screens.LoginSection.ViewModel.LoginViewModel
+import com.anonymous.ziwy.Utilities.ZColors.blue
+import com.anonymous.ziwy.Utilities.ZColors.blue_5p
 import com.anonymous.ziwy.Utilities.ZColors.lightBlueTransparent
 import com.anonymous.ziwy.Utilities.ZColors.orange
 import com.anonymous.ziwy.Utilities.ZColors.white
@@ -62,7 +64,7 @@ fun AddUserInformationPage(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Surface(
-        color = lightBlueTransparent,
+        color = blue_5p,
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures {
                 keyboardController?.hide()
@@ -88,7 +90,7 @@ fun AddUserInformationPage(
                     text = "User Information",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = orange,
+                    color = blue,
                     modifier = Modifier.padding(bottom = 36.dp, top = 36.dp)
                 )
 
