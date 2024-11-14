@@ -1,6 +1,5 @@
 package com.anonymous.ziwy.Screens.HomeSection.Components
 
-import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -30,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anonymous.ziwy.GenericModels.LoadingScreenState
+import com.anonymous.ziwy.Screens.HomeSection.Models.Coupon
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainStore
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainViewModel
 import com.anonymous.ziwy.Utilities.Utils.transitionColor
@@ -40,25 +39,9 @@ import com.anonymous.ziwy.Utilities.ZConstants
 fun CouponsContainer(
     viewModel: MainViewModel,
     state: MainStore,
-    context: Context,
-    isExpiringSoonFilterEnabled: MutableState<Boolean>,
-    selectedProductFilter: MutableState<String?>,
-    selectedBrandFilter: MutableState<String?>,
+    filteredList: List<Coupon>,
     onCouponClick: (String) -> Unit,
 ) {
-    val filteredList = state.couponsList
-//        .filter { it.redeemed != true } // uncomment this line to hide redeemed coupons
-        .filter {
-            it.expiryStatus == ZConstants.COUPON_IS_EXPIRING_SOON || !isExpiringSoonFilterEnabled.value
-        }
-        .filter {
-            selectedProductFilter.value == null || it.couponProduct?.contains(
-                selectedProductFilter.value
-            ) == true
-        }
-        .filter {
-            selectedBrandFilter.value == null || it.couponBrand == selectedBrandFilter.value
-        }
 
     if (state.imageUri != null && state.imageUri != Uri.EMPTY) {
 

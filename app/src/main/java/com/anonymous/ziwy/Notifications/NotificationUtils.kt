@@ -43,8 +43,8 @@ fun scheduleDailyNotification(context: Context) {
     scheduleNotification(
         context = context,
         alarmManager = alarmManager,
-        hours = hours,
-        minutes = minutes
+        hours = 19,
+        minutes = 55
     )
 }
 

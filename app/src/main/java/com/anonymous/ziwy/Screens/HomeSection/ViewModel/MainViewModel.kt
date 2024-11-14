@@ -219,9 +219,9 @@ class MainViewModel(
                         )
                         val couponData = resource.data ?: ExtractCouponImageResponseModel()
                         println("620555 MainViewModel extractCoupon Success ${resource.data}")
-                        if (couponData.couponCode.isNullOrEmpty() or couponData.couponBrand.isNullOrEmpty() or couponData.couponOffer.isNullOrEmpty()) {
+                        if (couponData.couponBrand.isNullOrEmpty() or couponData.couponOffer.isNullOrEmpty()) {
                             _state.value = _state.value.copy(
-                                message = "Please check if the coupon code and brand names are clearly visible.",
+                                message = "Please check if the brand name and offers are clearly visible.",
                                 imageUri = null
                             )
                         } else {
@@ -231,7 +231,7 @@ class MainViewModel(
                                     AddCouponRequestModel(
                                         mobileNumber = userDetails.phoneNumber,
                                         countryCode = userDetails.countryCode,
-                                        couponCode = it.couponCode,
+                                        couponCode = it.couponCode.takeIf { !it.isNullOrEmpty() } ?: "",
                                         userName = userDetails.username,
                                         couponBrand = it.couponBrand,
                                         couponProduct = it.couponProduct,
@@ -241,6 +241,9 @@ class MainViewModel(
                                         minSpend = it.minSpend?.toIntOrNull(),
                                         couponSource = null
                                     )
+                                )
+                                _state.value = _state.value.copy(
+                                    message = "Coupon code not found in the image.",
                                 )
                             }
                         }

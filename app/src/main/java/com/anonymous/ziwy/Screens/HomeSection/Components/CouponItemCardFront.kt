@@ -64,12 +64,12 @@ fun CouponItemCardFront(
         border = BorderStroke(2.dp, containerColor),
         color = containerColor,
         modifier = Modifier
-            .alpha(if (item.expiryStatus == ZConstants.COUPON_HAS_EXPIRED) 0.5f else 1f)
+            .alpha(if (item.expiryStatus == ZConstants.COUPON_HAS_EXPIRED) 1f else 1f)
             .clickable {
 //                isCardFlipped.value =
 //                    (item.expiryStatus != ZConstants.COUPON_HAS_EXPIRED)
-
-                item.couponID?.let { onCouponClick.invoke(it) }
+                if (item.expiryStatus != ZConstants.COUPON_HAS_EXPIRED)
+                    item.couponID?.let { onCouponClick.invoke(it) }
             }
     ) {
         Box(
@@ -135,7 +135,8 @@ fun CouponItemCardFront(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "View Details",
+                        text = if (item.expiryStatus != ZConstants.COUPON_HAS_EXPIRED)
+                            "View Details" else "EXPIRED",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
@@ -146,12 +147,13 @@ fun CouponItemCardFront(
                             .padding(vertical = 10.dp, horizontal = 5.dp),
                         color = viewDetailsColor
                     )
-                    Image(
-                        painterResource(id = R.drawable.fast_forward),
-                        contentDescription = "Home",
-                        modifier = Modifier.size(12.dp),
-                        colorFilter = ColorFilter.tint(viewDetailsColor)
-                    )
+                    if (item.expiryStatus != ZConstants.COUPON_HAS_EXPIRED)
+                        Image(
+                            painterResource(id = R.drawable.fast_forward),
+                            contentDescription = "Home",
+                            modifier = Modifier.size(12.dp),
+                            colorFilter = ColorFilter.tint(viewDetailsColor)
+                        )
                 }
             }
         }

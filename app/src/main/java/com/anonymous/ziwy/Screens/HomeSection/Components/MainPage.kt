@@ -34,7 +34,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainPage(navController: NavHostController, imageUri: Uri?, onLogout: () -> Unit) {
+fun MainPage(
+    navController: NavHostController,
+    imageUri: Uri?,
+    onLogout: () -> Unit
+) {
 
     val mainNavController = rememberNavController()
 
@@ -121,7 +125,7 @@ fun MainPage(navController: NavHostController, imageUri: Uri?, onLogout: () -> U
                     }
                 ) {
                     composable(NavigationItem.HomePage.route) {
-                        HomePage(mainNavController, viewModel, state, context) { couponId ->
+                        HomePage(mainNavController, viewModel, state) { couponId ->
                             navController.navigate(NavigationItem.CouponDetailPage.route + "/$couponId")
                         }
                     }

@@ -132,7 +132,7 @@ class CouponDetailViewModel(
                                 isLoading = false,
                                 screen = ZConstants.UPDATE_COUPON
                             ),
-                            message = resource.data?.message ?: "Coupon updated successfully"
+                            message = resource.data?.message ?: "Coupon marked as claimed."
                         )
                         println("620555 MainViewModel updateCoupon Success ${resource.data}")
                     }
