@@ -154,7 +154,7 @@ class LoginViewModel : ViewModel() {
                                 notificationId = resource.data?.body?.notificationId,
                                 creationTime = resource.data?.body?.creationTime
                             ),
-                            message = "User information added successfully"
+//                            message = "User information added successfully"
                         )
                     }
 

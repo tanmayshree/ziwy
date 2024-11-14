@@ -115,7 +115,7 @@ fun EnterMobileNumber(
 //            verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painterResource(id = R.drawable.ziwy_logo),
+                painterResource(id = R.drawable.ziwy_logo2),
                 contentDescription = "Ziwy logo",
                 modifier = Modifier
                     .size(160.dp),

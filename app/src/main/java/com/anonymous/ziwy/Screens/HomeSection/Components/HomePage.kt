@@ -1,6 +1,5 @@
 package com.anonymous.ziwy.Screens.HomeSection.Components
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,32 +16,56 @@ import com.anonymous.ziwy.GenericComponents.ZDialogDropdown
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainStore
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainViewModel
 import com.anonymous.ziwy.Utilities.ZColors.transparent
+import com.anonymous.ziwy.Utilities.ZConstants
 
 @Composable
 fun HomePage(
     navController: NavHostController,
     viewModel: MainViewModel,
     state: MainStore,
-    context: Context,
     onCouponClick: (String) -> Unit
 ) {
     val isExpiringSoonFilterEnabled = remember { mutableStateOf(false) }
+
     val isProductsFilterEnabled = remember { mutableStateOf(false) }
+
     val isBrandsFilterEnabled = remember { mutableStateOf(false) }
 
     val isProductFilterDropdownVisible = remember { mutableStateOf(false) }
+
     val isBrandFilterDropdownVisible = remember { mutableStateOf(false) }
 
-    val productList =
-        listOf("All Products") + state.couponsList.filter { it.redeemed != true }
-            .mapNotNull { it.couponProduct }.flatten()
-            .distinct()
-    val brandList =
-        listOf("All Brands") + state.couponsList.filter { it.redeemed != true }
-            .mapNotNull { it.couponBrand }.distinct()
+    val isActiveFilterEnabled = remember { mutableStateOf(false) }
+
+    val isRedeemedFilterEnabled = remember { mutableStateOf(false) }
 
     val selectedProductFilter = remember { mutableStateOf<String?>(null) }
+
     val selectedBrandFilter = remember { mutableStateOf<String?>(null) }
+
+    val filteredList = state.couponsList
+        .asSequence()
+        .filter { if (isRedeemedFilterEnabled.value) (it.redeemed == true && it.expiryStatus != ZConstants.COUPON_HAS_EXPIRED) else (it.redeemed != true) }
+        .filter { if (isActiveFilterEnabled.value) (it.expiryStatus != ZConstants.COUPON_HAS_EXPIRED) else true }
+        .filter {
+            it.expiryStatus == ZConstants.COUPON_IS_EXPIRING_SOON || !isExpiringSoonFilterEnabled.value
+        }
+        .filter {
+            selectedProductFilter.value == null || it.couponProduct?.contains(
+                selectedProductFilter.value
+            ) == true
+        }
+        .filter {
+            selectedBrandFilter.value == null || it.couponBrand == selectedBrandFilter.value
+        }
+        .toList()
+
+    val productList = listOf("All Products") + state.couponsList
+        .mapNotNull { it.couponProduct }.flatten()
+        .distinct()
+
+    val brandList = listOf("All Brands") + state.couponsList
+        .mapNotNull { it.couponBrand }.distinct()
 
     Scaffold(
         topBar = { WelcomeHeader(state) },
@@ -78,19 +101,20 @@ fun HomePage(
                     onProductFilterClick = {
                         isProductFilterDropdownVisible.value = !isProductFilterDropdownVisible.value
                     },
+                    selectedProductFilter = selectedProductFilter,
                     isBrandsFilterEnabled = isBrandsFilterEnabled,
                     onBrandFilterClick = {
                         isBrandFilterDropdownVisible.value = !isBrandFilterDropdownVisible.value
-                    }
+                    },
+                    selectedBrandFilter = selectedBrandFilter,
+                    isActiveFilterEnabled = isActiveFilterEnabled,
+                    isRedeemedFilterEnabled = isRedeemedFilterEnabled
                 )
                 CouponsContainer(
                     viewModel = viewModel,
                     state = state,
-                    context = context,
-                    isExpiringSoonFilterEnabled = isExpiringSoonFilterEnabled,
-                    selectedProductFilter = selectedProductFilter,
-                    selectedBrandFilter = selectedBrandFilter,
-                    onCouponClick = onCouponClick
+                    filteredList = filteredList,
+                    onCouponClick = onCouponClick,
                 )
             }
         }

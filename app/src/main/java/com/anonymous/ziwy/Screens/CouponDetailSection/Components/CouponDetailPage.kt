@@ -306,7 +306,7 @@ fun CouponDetailPage(navController: NavHostController, couponId: String?) {
                         )
 
                         Text(
-                            text = "Redeemed - ${if (coupon.redeemed == true) "Yes" else "No"}",
+                            text = "Claimed - ${if (coupon.redeemed == true) "Yes" else "No"}",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier
