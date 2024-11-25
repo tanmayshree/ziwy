@@ -7,6 +7,9 @@ plugins {
     kotlin("plugin.serialization") version "1.9.0"
     id("kotlin-parcelize")
 //    alias(libs.plugins.compose.compiler)
+
+    //firebase sdk
+    id("com.google.gms.google-services")
 }
 
 val myKeysPropertiesFile = rootProject.file("mykeys.properties")
@@ -26,8 +29,8 @@ android {
         applicationId = "com.anonymous.ziwy"
         minSdk = 24
         targetSdk = 34
-        versionCode = 20001
-        versionName = "2.0.1"
+        versionCode = 20002
+        versionName = "2.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -118,4 +121,7 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
+    // Firebase sdk
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }

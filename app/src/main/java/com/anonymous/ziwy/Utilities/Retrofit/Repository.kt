@@ -1,6 +1,10 @@
 package com.anonymous.ziwy.Utilities.Retrofit
 
 import com.anonymous.ziwy.GenericModels.AppUpdateInfoResponseModel
+import com.anonymous.ziwy.Screens.CardsSection.Models.CardsListResponseModel
+import com.anonymous.ziwy.Screens.CardsSection.Models.UpdateUserCardRequestModel
+import com.anonymous.ziwy.Screens.CardsSection.Models.UpdateUserCardResponseModel
+import com.anonymous.ziwy.Screens.CardsSection.Models.UserCardsListResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.CouponsListResponseModel
@@ -147,4 +151,61 @@ class Repository {
                 emit(Resource.Error(response.message ?: "Something went wrong!"))
             }
         }
+
+    fun getCardsList(
+        mobileNumber: String?,
+        countryCode: String?
+    ): Flow<Resource<CardsListResponseModel>> = flow {
+        emit(Resource.Loading())
+        val response = ApiResponseHandler.handleApiCall {
+            RetrofitClient.apiService.getCardsList(mobileNumber, countryCode)
+        }
+        if (response is Resource.Success) {
+            if (response.data?.statusCode != null && response.data.statusCode == 200) {
+                emit(Resource.Success(response.data))
+            } else {
+                emit(Resource.Error(response.data?.message ?: "Something went wrong!"))
+            }
+        } else {
+            emit(Resource.Error(response.message ?: "Something went wrong!"))
+        }
+    }
+
+    fun getUserCardList(
+        mobileNumber: String?,
+        countryCode: String?
+    ): Flow<Resource<UserCardsListResponseModel>> = flow {
+        emit(Resource.Loading())
+        val response = ApiResponseHandler.handleApiCall {
+            RetrofitClient.apiService.getUserCardList(mobileNumber, countryCode)
+        }
+        if (response is Resource.Success) {
+            if (response.data?.statusCode != null && response.data.statusCode == 200) {
+                emit(Resource.Success(response.data))
+            } else {
+                emit(Resource.Error(response.data?.message ?: "Something went wrong!"))
+            }
+        } else {
+            emit(Resource.Error(response.message ?: "Something went wrong!"))
+        }
+    }
+
+    fun updateUserCardList(
+        userCardsList: UpdateUserCardRequestModel
+    ): Flow<Resource<UpdateUserCardResponseModel>> = flow {
+        emit(Resource.Loading())
+        val response = ApiResponseHandler.handleApiCall {
+            RetrofitClient.apiService.updateUserCardList(userCardsList)
+        }
+        if (response is Resource.Success) {
+            if (response.data?.statusCode != null && response.data.statusCode == 200) {
+                emit(Resource.Success(response.data))
+            } else {
+                emit(Resource.Error(response.data?.message ?: "Something went wrong!"))
+            }
+        } else {
+            emit(Resource.Error(response.message ?: "Something went wrong!"))
+        }
+    }
+
 }

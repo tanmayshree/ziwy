@@ -1,6 +1,10 @@
 package com.anonymous.ziwy.Utilities.Retrofit
 
 import com.anonymous.ziwy.GenericModels.AppUpdateInfoResponseModel
+import com.anonymous.ziwy.Screens.CardsSection.Models.CardsListResponseModel
+import com.anonymous.ziwy.Screens.CardsSection.Models.UpdateUserCardRequestModel
+import com.anonymous.ziwy.Screens.CardsSection.Models.UpdateUserCardResponseModel
+import com.anonymous.ziwy.Screens.CardsSection.Models.UserCardsListResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.CouponsListResponseModel
@@ -56,4 +60,21 @@ interface ApiService {
     suspend fun extractCouponImage(
         @Body extractCouponRequestModel: ExtractCouponImageRequestModel
     ): Response<ExtractCouponImageResponseModel>
+
+    @GET("all-credit-cards")
+    suspend fun getCardsList(
+        @Query("mobileNumber") mobileNumber: String?,
+        @Query("countryCode") countryCode: String?
+    ): Response<CardsListResponseModel>
+
+    @GET("user-credit-card")
+    suspend fun getUserCardList(
+        @Query("mobileNumber") mobileNumber: String?,
+        @Query("countryCode") countryCode: String?
+    ): Response<UserCardsListResponseModel>
+
+    @PUT("user-credit-card")
+    suspend fun updateUserCardList(
+        @Body userCardsList: UpdateUserCardRequestModel
+    ): Response<UpdateUserCardResponseModel>
 }

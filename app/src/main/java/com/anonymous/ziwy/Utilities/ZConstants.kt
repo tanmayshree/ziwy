@@ -15,4 +15,9 @@ object ZConstants {
     const val ADD_USER_INFO = "ADD_USER_INFO"
     const val APP_UPDATE_INFO = "APP_UPDATE_INFO"
     const val EXPIRY_NOTIFICATION = "EXPIRY_NOTIFICATION"
+
+    const val FETCH_CARDS = "FETCH_CARDS"
+    const val FETCH_USER_CARDS = "FETCH_USER_CARDS"
+    const val FETCH_CARDS_LIST = "FETCH_CARDS_LIST"
+    const val UPDATE_USER_CARDS = "UPDATE_USER_CARDS"
 }
