@@ -13,3 +13,6 @@
 ## Version 2.0.1 - 12 Nov, 2024
 - Implemented local notifications for coupon expiry ie, 5 days, 2 days and 1 day remaining.
 - Added a new UI for coupon card and added a coupon detail screen.
+
+## Version 2.0.2 - 14 Nov, 2024
+- Added functionality for uploading code without coupon.

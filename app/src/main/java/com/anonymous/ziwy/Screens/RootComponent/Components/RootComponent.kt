@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.anonymous.ziwy.GenericModels.NotificationIntentData
 import com.anonymous.ziwy.MainActivity
+import com.anonymous.ziwy.Screens.CardsSection.Components.CardsPage
 import com.anonymous.ziwy.Screens.CouponDetailSection.Components.CouponDetailPage
 import com.anonymous.ziwy.Screens.HomeSection.Components.MainPage
 import com.anonymous.ziwy.Screens.LoginSection.Components.AddUserInformationPage
@@ -155,6 +156,10 @@ fun RootComponent(viewModel: LoginViewModel, state: LoginStore, intent: Intent) 
         ) { backStackEntry ->
             val couponId = backStackEntry.arguments?.getString("couponId")
             CouponDetailPage(navController, couponId)
+        }
+
+        composable(NavigationItem.CardsPage.route) {
+            CardsPage(navController)
         }
     }
 }

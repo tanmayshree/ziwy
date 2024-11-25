@@ -81,7 +81,14 @@ fun MainPage(
     }
 
     Scaffold(
-        bottomBar = { BottomBar(mainNavController) },
+        bottomBar = {
+            BottomBar(
+                navController = mainNavController,
+                onCardSectionClick = {
+                    navController.navigate(NavigationItem.CardsPage.route)
+                }
+            )
+        },
         containerColor = transparent,
     ) { it ->
         Column(
@@ -125,9 +132,14 @@ fun MainPage(
                     }
                 ) {
                     composable(NavigationItem.HomePage.route) {
-                        HomePage(mainNavController, viewModel, state) { couponId ->
-                            navController.navigate(NavigationItem.CouponDetailPage.route + "/$couponId")
-                        }
+                        HomePage(
+                            navController = mainNavController,
+                            viewModel = viewModel,
+                            state = state,
+                            onCouponClick = { couponId ->
+                                navController.navigate(NavigationItem.CouponDetailPage.route + "/$couponId")
+                            }
+                        )
                     }
                     composable(NavigationItem.UploadPage.route) {
                         UploadPage(mainNavController, viewModel, state)

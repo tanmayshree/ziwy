@@ -27,7 +27,7 @@ import com.anonymous.ziwy.Utilities.ZColors.lightBlue
 import com.anonymous.ziwy.Utilities.ZColors.orange
 
 @Composable
-fun BottomBar(navController: NavHostController) {
+fun BottomBar(navController: NavHostController, onCardSectionClick: () -> Unit) {
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
     HorizontalDivider()
@@ -72,6 +72,17 @@ fun BottomBar(navController: NavHostController) {
                         launchSingleTop = true
                     }
                 }
+            }
+        )
+
+        BottomBarItem(
+            iconId = R.drawable.card_logo,
+            selectedIconId = R.drawable.card_logo,
+            label = "Cards",
+            isSelected = currentDestination == NavigationItem.CardsPage.route,
+            selectedColor = orange,
+            onClick = {
+                onCardSectionClick.invoke()
             }
         )
 
