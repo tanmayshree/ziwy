@@ -51,8 +51,62 @@ class MainViewModel(
             )
             println("620555 MainViewModel getUserData Success $userDetails")
             fetchCouponsList(userDetails.phoneNumber, userDetails.countryCode)
+            getUserData(userDetails.phoneNumber, userDetails.countryCode)
         }
     }
+
+    fun getUserData(mobileNumber: String?, countryCode: String?) {
+        viewModelScope.launch {
+            repository.getUserData(mobileNumber, countryCode)
+                .collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> {
+                            _state.value = _state.value.copy(
+                                loadingScreenState = LoadingScreenState(
+                                    isLoading = true,
+                                    screen = ZConstants.GET_USER_DATA
+                                )
+                            )
+                        }
+
+                        is Resource.Success -> {
+                            val response = resource.data?.body
+
+                            response?.userName?.let {
+                                println("620555 - MainViewModel.kt - getUserData - userName - $it")
+                                _state.value = _state.value.copy(
+                                    loadingScreenState = LoadingScreenState(
+                                        isLoading = false,
+                                        screen = ZConstants.GET_USER_DATA
+                                    ),
+                                    isEmailSynced = response.emailSync == true,
+                                )
+                            } ?: run {
+                                println("620555 - MainViewModel.kt - getUserData - userName - null")
+                                _state.value = _state.value.copy(
+                                    loadingScreenState = LoadingScreenState(
+                                        isLoading = false,
+                                        screen = ZConstants.GET_USER_DATA
+                                    ),
+                                )
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            println("620555 - LoginViewModel.kt - getUserData - Error - ${resource.message}")
+                            _state.value = _state.value.copy(
+                                loadingScreenState = LoadingScreenState(
+                                    isLoading = false,
+                                    screen = ZConstants.GET_USER_DATA
+                                ),
+                                message = resource.message
+                            )
+                        }
+                    }
+                }
+        }
+    }
+
 
     fun fetchCouponsList(mobileNumber: String?, countryCode: String?) {
         viewModelScope.launch {
@@ -231,7 +285,8 @@ class MainViewModel(
                                     AddCouponRequestModel(
                                         mobileNumber = userDetails.phoneNumber,
                                         countryCode = userDetails.countryCode,
-                                        couponCode = it.couponCode.takeIf { !it.isNullOrEmpty() } ?: "",
+                                        couponCode = it.couponCode.takeIf { !it.isNullOrEmpty() }
+                                            ?: "",
                                         userName = userDetails.username,
                                         couponBrand = it.couponBrand,
                                         couponProduct = it.couponProduct,

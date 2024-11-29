@@ -55,6 +55,14 @@ class LoginViewModel : ViewModel() {
         )
     }
 
+    fun setGoogleSignInCompleted(isGoogleSignInCompleted: Boolean) {
+        println("620555 - LoginViewModel.kt - setGoogleSignInCompleted - $isGoogleSignInCompleted")
+        _state.value = _state.value.copy(
+            isGoogleSignInCompleted = isGoogleSignInCompleted
+        )
+    }
+
+
     //getUserData
     fun getUserData(responseWithToken: String) {
         viewModelScope.launch {
@@ -89,7 +97,8 @@ class LoginViewModel : ViewModel() {
                                         mobileNumber = response.mobileNumber,
                                         countryCode = response.countryCode,
                                         gender = response.gender,
-                                        ageGroup = response.ageGroup
+                                        ageGroup = response.ageGroup,
+                                        emailSync = response.emailSync
                                     ),
                                     isLoginSuccess = true,
                                     isNewUser = false,
@@ -152,7 +161,8 @@ class LoginViewModel : ViewModel() {
                                 gender = resource.data?.body?.gender,
                                 ageGroup = resource.data?.body?.ageGroup,
                                 notificationId = resource.data?.body?.notificationId,
-                                creationTime = resource.data?.body?.creationTime
+                                creationTime = resource.data?.body?.creationTime,
+                                emailSync = false
                             ),
 //                            message = "User information added successfully"
                         )

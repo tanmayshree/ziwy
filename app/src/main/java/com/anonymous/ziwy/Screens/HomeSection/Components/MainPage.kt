@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 fun MainPage(
     navController: NavHostController,
     imageUri: Uri?,
+    isGoogleSignInCompleted: Boolean?,
     onLogout: () -> Unit
 ) {
 
@@ -70,7 +71,8 @@ fun MainPage(
         }
     }
 
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = Unit, key2 = isGoogleSignInCompleted) {
+        println("620555 - MainPage.kt - isGoogleSignInCompleted - $isGoogleSignInCompleted")
         viewModel.getUserData(context)
     }
 
@@ -125,9 +127,14 @@ fun MainPage(
                     }
                 ) {
                     composable(NavigationItem.HomePage.route) {
-                        HomePage(mainNavController, viewModel, state) { couponId ->
-                            navController.navigate(NavigationItem.CouponDetailPage.route + "/$couponId")
-                        }
+                        HomePage(
+                            navController = mainNavController,
+                            viewModel = viewModel,
+                            state = state,
+                            onCouponClick = { couponId ->
+                                navController.navigate(NavigationItem.CouponDetailPage.route + "/$couponId")
+                            }
+                        )
                     }
                     composable(NavigationItem.UploadPage.route) {
                         UploadPage(mainNavController, viewModel, state)

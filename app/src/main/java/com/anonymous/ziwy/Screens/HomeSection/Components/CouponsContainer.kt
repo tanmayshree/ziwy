@@ -65,7 +65,8 @@ fun CouponsContainer(
         contentPadding = PaddingValues(horizontal = 16.dp),
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.padding(bottom = if (state.isEmailSynced) 0.dp else 46.dp)
     ) {
         if (state.imageUri != null && state.imageUri != Uri.EMPTY) {
             item {

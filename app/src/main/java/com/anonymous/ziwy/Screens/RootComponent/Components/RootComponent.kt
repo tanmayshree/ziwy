@@ -121,7 +121,11 @@ fun RootComponent(viewModel: LoginViewModel, state: LoginStore, intent: Intent) 
             LoginPage(navController = navController, viewModel, state)
         }
         composable(NavigationItem.MainPage.route) {
-            MainPage(navController = navController, imageUri = state.imageUri) {
+            MainPage(
+                navController = navController,
+                imageUri = state.imageUri,
+                isGoogleSignInCompleted = state.isGoogleSignInCompleted
+            ) {
                 coroutineScope.launch {
                     onLogout(context)
 //                    println("620555 RootComponent - logout - navigate to LoginPage")

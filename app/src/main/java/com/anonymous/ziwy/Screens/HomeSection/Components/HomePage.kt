@@ -1,5 +1,10 @@
 package com.anonymous.ziwy.Screens.HomeSection.Components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.anonymous.ziwy.GenericComponents.ZDialogDropdown
@@ -117,6 +123,20 @@ fun HomePage(
                     onCouponClick = onCouponClick,
                 )
             }
+            //Animated Strip
+            AnimatedVisibility(
+                visible = !state.isEmailSynced,
+                enter = fadeIn() + slideInVertically { +it / 2 },
+                exit = fadeOut() + slideOutVertically { +it / 2 }
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    SignInToGoogleStrip(state)
+                }
+            }
+
         }
     }
 }
