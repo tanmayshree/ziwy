@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import com.anonymous.ziwy.Screens.LoginSection.ViewModel.LoginViewModel
 import com.anonymous.ziwy.Screens.LoginSection.ViewModel.LoginViewModelFactory
 import com.anonymous.ziwy.Screens.RootComponent.Components.RootComponent
 import com.anonymous.ziwy.Utilities.Utils
+import com.anonymous.ziwy.Utilities.Utils.handleGoogleSignInIntent
 import com.anonymous.ziwy.Utilities.Utils.handleSharingIntents
 import com.anonymous.ziwy.Utilities.ZColors.white
 import com.anonymous.ziwy.ui.theme.ZiwyTheme
@@ -52,6 +54,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var viewModel: LoginViewModel
 
     private lateinit var imageUris: Uri
+
+    private val googleSignInComplete: MutableState<Boolean?> = mutableStateOf(null)
 
     // For Notifications
     private lateinit var permissionManager: PermissionManager
@@ -94,6 +98,13 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
+                        LaunchedEffect(key1 = googleSignInComplete.value) {
+                            println("620555 Google sign in complete: ${googleSignInComplete.value}")
+                            if (googleSignInComplete.value == true) {
+                                viewModel.setGoogleSignInCompleted(isGoogleSignInCompleted = true)
+                            }
+                        }
+
                         val isDialogVisible = remember { mutableStateOf(true) }
                         LaunchedEffect(key1 = Unit) {
                             viewModel.getAppUpdateInfo()
@@ -133,6 +144,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         imageUris = handleSharingIntents(intent)
+        googleSignInComplete.value = handleGoogleSignInIntent(intent)
     }
 
     suspend fun saveToPreferences(key: String, value: String) {
@@ -222,6 +234,8 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         otplessView?.onNewIntent(intent)
         imageUris = handleSharingIntents(intent)
+
+        googleSignInComplete.value = handleGoogleSignInIntent(intent)
     }
 
     override fun onBackPressed() {

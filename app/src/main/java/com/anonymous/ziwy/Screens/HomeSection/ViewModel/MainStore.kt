@@ -14,5 +14,6 @@ data class MainStore(
     val username: String? = null,
     val countryCode: String? = null,
     val phoneNumber: String? = null,
-    val joiningDate: String? = null
+    val joiningDate: String? = null,
+    val isEmailSynced: Boolean = true,
 )

@@ -5,7 +5,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.anonymous.ziwy.GenericModels.AppUpdateInfoResponseModel
 import com.anonymous.ziwy.GenericModels.LoadingScreenState
-import com.anonymous.ziwy.R
 import com.anonymous.ziwy.Screens.LoginSection.Models.SuccessResponseForUserData
 
 data class LoginStore(
@@ -23,6 +22,7 @@ data class LoginStore(
     val countryCode: MutableState<String> = mutableStateOf("91"),
     val countryFlag: MutableState<String> = mutableStateOf("🇮🇳"),
 
-    val imageUri :  Uri? = null,
+    val imageUri: Uri? = null,
+    val isGoogleSignInCompleted: Boolean? = null,
     val appUpdateInfo: AppUpdateInfoResponseModel? = null
 )

@@ -15,7 +15,8 @@ data class SuccessResponseForUserData(
     val countryCode: String? = null,
     val email: String? = null,
     val gender: String? = null,
-    val ageGroup: String? = null
+    val ageGroup: String? = null,
+    val emailSync: Boolean? = null
 ) : ApiResponseForUserData()
 
 @Serializable

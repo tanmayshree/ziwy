@@ -119,6 +119,16 @@ object Utils {
         return Uri.EMPTY
     }
 
+    fun handleGoogleSignInIntent(intent: Intent): Boolean {
+        println("620555 - Utils - handleGoogleSignInIntent - ${intent.data}")
+        val ans =  intent.data?.let {
+            it.path?.startsWith("/oauth2callback") == true
+        } ?: false
+
+        println("620555 - Utils - handleGoogleSignInIntent Answer - $ans")
+        return ans
+    }
+
     suspend fun getUserDetailsFromPreferences(context: Context): PreferencesUserData {
 
         val userName = withContext(Dispatchers.IO) {

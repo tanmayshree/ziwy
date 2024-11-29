@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "282215429598",
+    "project_id": "ziwy-app---android",
+    "storage_bucket": "ziwy-app---android.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282215429598:android:ed2a36a3cfe8bb4085594f",
+        "android_client_info": {
+          "package_name": "com.anonymous.ziwy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuNLU7aWgXNt3IwIq7orxpImEpBTY1imM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

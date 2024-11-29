@@ -19,5 +19,6 @@ data class VerifyUser(
     val ageGroup: String? = null,
     val notificationId: String? = null,
     val creationTime: String? = null,
+    val emailSync: Boolean? = null,
 //    val primaryKey: String? = null
 )
