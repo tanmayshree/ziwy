@@ -24,6 +24,7 @@ if (myKeysPropertiesFile.exists()) {
 android {
     namespace = "com.anonymous.ziwy"
     compileSdk = 34
+    buildToolsVersion = "34.0.0"
 
     defaultConfig {
         applicationId = "com.anonymous.ziwy"
@@ -49,6 +50,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {

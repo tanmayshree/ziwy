@@ -50,8 +50,8 @@ class MainViewModel(
                 joiningDate = userDetails.joiningDate?.let { Utils.formatDateTime(it) }
             )
             println("620555 MainViewModel getUserData Success $userDetails")
-            fetchCouponsList(userDetails.phoneNumber, userDetails.countryCode)
-            getUserData(userDetails.phoneNumber, userDetails.countryCode)
+            fetchCouponsList(userDetails.phoneNumber, userDetails.countryCode, fetchUserData = true)
+//            getUserData(userDetails.phoneNumber, userDetails.countryCode)
         }
     }
 
@@ -108,7 +108,7 @@ class MainViewModel(
     }
 
 
-    fun fetchCouponsList(mobileNumber: String?, countryCode: String?) {
+    fun fetchCouponsList(mobileNumber: String?, countryCode: String?, fetchUserData: Boolean) {
         viewModelScope.launch {
             repository.getCouponsList(mobileNumber, countryCode).collect { resource ->
                 when (resource) {
@@ -149,6 +149,7 @@ class MainViewModel(
 //                            message = "Coupons fetched successfully"
                         )
                         println("620555 MainViewModel fetchCouponsList Success ${resource.data}")
+                        if (fetchUserData) getUserData(mobileNumber, countryCode)
                     }
 
                     is Resource.Error -> {
@@ -162,6 +163,7 @@ class MainViewModel(
 //                            message = resource.message
                         )
                         println("620555 MainViewModel fetchCouponsList Error ${resource.message}")
+                        if (fetchUserData) getUserData(mobileNumber, countryCode)
                     }
                 }
             }
@@ -346,7 +348,7 @@ class MainViewModel(
                             imageUri = null,
                             message = resource.data?.message ?: "Coupon added successfully"
                         )
-                        fetchCouponsList(_state.value.phoneNumber, _state.value.countryCode)
+                        fetchCouponsList(_state.value.phoneNumber, _state.value.countryCode, false)
                         println("620555 MainViewModel addNewCoupon Success ${resource.data}")
                     }
 
