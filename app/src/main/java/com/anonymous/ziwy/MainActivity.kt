@@ -43,6 +43,7 @@ import com.otpless.dto.HeadlessRequest
 import com.otpless.dto.HeadlessResponse
 import com.otpless.main.OtplessManager
 import com.otpless.main.OtplessView
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -102,6 +103,8 @@ class MainActivity : ComponentActivity() {
                             println("620555 Google sign in complete: ${googleSignInComplete.value}")
                             if (googleSignInComplete.value == true) {
                                 viewModel.setGoogleSignInCompleted(isGoogleSignInCompleted = true)
+                                delay(5000)
+                                googleSignInComplete.value = null
                             }
                         }
 
