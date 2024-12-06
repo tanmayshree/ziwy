@@ -1,9 +1,15 @@
 package com.anonymous.ziwy
 
+import android.Manifest
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Telephony
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,12 +26,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.anonymous.ziwy.GenericComponents.ForceUpdateDialog
 import com.anonymous.ziwy.Notifications.PermissionManager
 import com.anonymous.ziwy.Notifications.createNotificationChannel
@@ -38,6 +50,7 @@ import com.anonymous.ziwy.Utilities.Utils
 import com.anonymous.ziwy.Utilities.Utils.handleGoogleSignInIntent
 import com.anonymous.ziwy.Utilities.Utils.handleSharingIntents
 import com.anonymous.ziwy.Utilities.ZColors.white
+import com.anonymous.ziwy.WorkManager.DailySMSWorker
 import com.anonymous.ziwy.ui.theme.ZiwyTheme
 import com.otpless.dto.HeadlessRequest
 import com.otpless.dto.HeadlessResponse
@@ -45,6 +58,8 @@ import com.otpless.main.OtplessManager
 import com.otpless.main.OtplessView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -102,6 +117,11 @@ class MainActivity : ComponentActivity() {
                         LaunchedEffect(key1 = googleSignInComplete.value) {
                             println("620555 Google sign in complete: ${googleSignInComplete.value}")
                             if (googleSignInComplete.value == true) {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Google sign-in success. Coupons in your e-mail will be added to Ziwy.",
+                                    Toast.LENGTH_LONG
+                                ).show()
                                 viewModel.setGoogleSignInCompleted(isGoogleSignInCompleted = true)
                                 delay(5000)
                                 googleSignInComplete.value = null
@@ -128,8 +148,28 @@ class MainActivity : ComponentActivity() {
                         val context = LocalContext.current
                         LaunchedEffect(Unit) {
 
+                            if (ActivityCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.READ_SMS
+                                ) != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                smsPermissionLauncher.launch(Manifest.permission.READ_SMS)
+                            } else {
+                                scheduleDailyTask()
+                            }
+
+                            /*if (ActivityCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.RECEIVE_SMS
+                                ) != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                smsPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
+                            } else {
+                                receiveSMS()
+                            }*/
+
                             if (!permissionManager.hasNotificationPermission()) {
-                                notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                                 //permissionManager.requestNotificationPermission(this@MainActivity)
                             } else {
                                 if (permissionManager.hasExactAlarmPermission()) {
@@ -265,7 +305,71 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val smsPermissionLauncher = registerForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // SMS permission granted
+            println("620555 SMS permission granted")
+            scheduleDailyTask()
+        } else {
+            // SMS permission denied
+            // Handle accordingly
+            println("620555 SMS permission denied")
+            //call again
+        }
+    }
 
+    private fun receiveSMS() {
+        val smsBroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                println("620555 SMS Received")
+                Telephony.Sms.Intents.getMessagesFromIntent(intent).forEachIndexed { index, sms ->
+                    // display everything
+                    println("620555 SMS Received: $index: ${sms.displayMessageBody}")
+                    println("620555 SMS Received: $index: ${sms.messageBody}")
+                    //from where the sms is coming
+                    println("620555 SMS Received: $index: ${sms.displayOriginatingAddress}")
+                    println("620555 SMS Received: $index: ${sms.originatingAddress}")
+                }
+            }
+        }
+        registerReceiver(
+            smsBroadcastReceiver,
+            IntentFilter("android.provider.Telephony.SMS_RECEIVED")
+        )
+    }
+
+    private fun scheduleDailyTask() {
+        val currentTime = Calendar.getInstance()
+        val targetTime = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 20)
+            set(Calendar.MINUTE, 45)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+
+            if (before(currentTime)) {
+                add(Calendar.DAY_OF_MONTH, 1) // Schedule for the next day if the time has passed
+            }
+        }
+
+        val initialDelay = targetTime.timeInMillis - currentTime.timeInMillis
+
+        val workRequest = PeriodicWorkRequestBuilder<DailySMSWorker>(24, TimeUnit.HOURS)
+            .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED) // Optional: Add constraints
+                    .build()
+            )
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "DailySMSWorker",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            workRequest
+        )
+    }
 //    override fun onNewIntent(intent: Intent) {
 //        if (otplessView != null) {
 //            otplessView.onNewIntent(intent)

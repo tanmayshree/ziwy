@@ -14,7 +14,7 @@ class PermissionManager(private val context: Context) {
 
     companion object {
         const val NOTIFICATION_PERMISSION = "android.permission.POST_NOTIFICATIONS"
-        const val REQUEST_CODE = 1001
+        const val NOTIFICATION_REQUEST_CODE = 1001
     }
 
     fun hasNotificationPermission(): Boolean {
@@ -25,7 +25,7 @@ class PermissionManager(private val context: Context) {
     }
 
     fun requestNotificationPermission(activity: Activity) {
-        ActivityCompat.requestPermissions(activity, arrayOf(NOTIFICATION_PERMISSION), REQUEST_CODE)
+        ActivityCompat.requestPermissions(activity, arrayOf(NOTIFICATION_PERMISSION), NOTIFICATION_REQUEST_CODE)
     }
 
     // Function to check if exact alarms are allowed
