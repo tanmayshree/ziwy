@@ -3,6 +3,7 @@ package com.anonymous.ziwy.Utilities.Retrofit
 import com.anonymous.ziwy.GenericModels.AppUpdateInfoResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponResponseModel
+import com.anonymous.ziwy.Screens.HomeSection.Models.CarouselListResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.CouponsListResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageResponseModel
@@ -56,4 +57,7 @@ interface ApiService {
     suspend fun extractCouponImage(
         @Body extractCouponRequestModel: ExtractCouponImageRequestModel
     ): Response<ExtractCouponImageResponseModel>
+
+    @GET("carousel")
+    suspend fun getCarouselImages(): Response<CarouselListResponseModel>
 }
