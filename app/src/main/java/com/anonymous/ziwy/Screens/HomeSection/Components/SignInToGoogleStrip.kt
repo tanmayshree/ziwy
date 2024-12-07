@@ -1,5 +1,6 @@
 package com.anonymous.ziwy.Screens.HomeSection.Components
 
+/*
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
@@ -104,4 +105,4 @@ fun SignInToGoogleStrip(state: MainStore) {
             }
         }
     }
-}
+}*/

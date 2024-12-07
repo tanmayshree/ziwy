@@ -1,6 +1,11 @@
 package com.anonymous.ziwy.Screens.HomeSection.Components
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +37,7 @@ import com.anonymous.ziwy.GenericModels.LoadingScreenState
 import com.anonymous.ziwy.Screens.HomeSection.Models.Coupon
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainStore
 import com.anonymous.ziwy.Screens.HomeSection.ViewModel.MainViewModel
+import com.anonymous.ziwy.Screens.RootComponent.Components.SplashPage
 import com.anonymous.ziwy.Utilities.Utils.transitionColor
 import com.anonymous.ziwy.Utilities.ZColors.grey
 import com.anonymous.ziwy.Utilities.ZConstants
@@ -42,25 +49,6 @@ fun CouponsContainer(
     filteredList: List<Coupon>,
     onCouponClick: (String) -> Unit,
 ) {
-
-    if (state.imageUri != null && state.imageUri != Uri.EMPTY) {
-
-    } else if (state.loadingScreenState == LoadingScreenState(true, ZConstants.FETCH_COUPONS)) {
-
-    } else if (filteredList.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = "Share your first coupon screenshot and show the world your savings game!",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                fontStyle = FontStyle.Italic,
-                color = grey,
-                modifier = Modifier
-                    .padding(20.dp, 10.dp)
-            )
-        }
-    }
     LazyVerticalGrid(
         contentPadding = PaddingValues(horizontal = 16.dp),
         columns = GridCells.Fixed(2),
@@ -68,6 +56,17 @@ fun CouponsContainer(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(bottom = if (state.isEmailSynced) 0.dp else 46.dp)
     ) {
+
+        item(span = { GridItemSpan(2) }) {
+            AnimatedVisibility(
+                visible = state.carouselImagesList.isNotEmpty(),
+//                    modifier = Modifier.background(grey),
+                enter = fadeIn() + slideInVertically { -it / 2 },
+                exit = fadeOut() + slideOutVertically { -it / 2 }
+            ) {
+                CarouselRow(state)
+            }
+        }
         if (state.imageUri != null && state.imageUri != Uri.EMPTY) {
             item {
                 Box(
@@ -129,6 +128,24 @@ fun CouponsContainer(
                     }
                 }*/
             }
+        }
+    }
+    if (state.imageUri != null && state.imageUri != Uri.EMPTY) {
+
+    } else if (state.loadingScreenState == LoadingScreenState(true, ZConstants.FETCH_COUPONS)) {
+
+    } else if (filteredList.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                text = "Share your first coupon screenshot and show the world your savings game!",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Italic,
+                color = grey,
+                modifier = Modifier
+                    .padding(20.dp, 10.dp)
+            )
         }
     }
 }

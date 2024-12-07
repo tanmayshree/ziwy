@@ -58,7 +58,7 @@ fun BottomBar(navController: NavHostController) {
         )
 
         BottomBarItem(
-            iconId = R.drawable.upload_icon,
+            iconId = R.drawable.upload_icon_grey,
             selectedIconId = R.drawable.upload_icon,
             label = "Upload",
             isSelected = currentDestination == NavigationItem.UploadPage.route,

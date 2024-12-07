@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -102,6 +103,11 @@ class MainActivity : ComponentActivity() {
                         LaunchedEffect(key1 = googleSignInComplete.value) {
                             println("620555 Google sign in complete: ${googleSignInComplete.value}")
                             if (googleSignInComplete.value == true) {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Google sign-in success. Coupons in your e-mail will be added to Ziwy.",
+                                    Toast.LENGTH_LONG
+                                ).show()
                                 viewModel.setGoogleSignInCompleted(isGoogleSignInCompleted = true)
                                 delay(5000)
                                 googleSignInComplete.value = null
