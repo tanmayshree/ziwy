@@ -99,7 +99,7 @@ fun CarouselItem(carousel: Carousel, uriHandler: UriHandler) {
     ) {
         AsyncImage(
             model = carousel.imageLink,
-            contentDescription = null,
+            contentDescription = carousel.caption,
             contentScale = ContentScale.FillHeight,
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
