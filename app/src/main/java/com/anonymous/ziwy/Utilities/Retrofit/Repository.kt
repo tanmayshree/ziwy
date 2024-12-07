@@ -3,6 +3,7 @@ package com.anonymous.ziwy.Utilities.Retrofit
 import com.anonymous.ziwy.GenericModels.AppUpdateInfoResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.AddCouponResponseModel
+import com.anonymous.ziwy.Screens.HomeSection.Models.CarouselListResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.CouponsListResponseModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageRequestModel
 import com.anonymous.ziwy.Screens.HomeSection.Models.ExtractCouponImageResponseModel
@@ -147,4 +148,20 @@ class Repository {
                 emit(Resource.Error(response.message ?: "Something went wrong!"))
             }
         }
+
+    fun getCarouselImages(): Flow<Resource<CarouselListResponseModel>> = flow {
+        emit(Resource.Loading())
+        val response = ApiResponseHandler.handleApiCall {
+            RetrofitClient.apiService.getCarouselImages()
+        }
+        if (response is Resource.Success) {
+            if (response.data != null) {
+                emit(Resource.Success(response.data))
+            } else {
+                emit(Resource.Error("Something went wrong!"))
+            }
+        } else {
+            emit(Resource.Error(response.message ?: "Something went wrong!"))
+        }
+    }
 }
