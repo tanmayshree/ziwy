@@ -149,7 +149,7 @@ class MainViewModel(
 //                            message = "Coupons fetched successfully"
                         )
                         println("620555 MainViewModel fetchCouponsList Success ${resource.data}")
-                        if (fetchUserData) getUserData(mobileNumber, countryCode)
+//                        if (fetchUserData) getUserData(mobileNumber, countryCode)
                     }
 
                     is Resource.Error -> {
@@ -163,7 +163,7 @@ class MainViewModel(
 //                            message = resource.message
                         )
                         println("620555 MainViewModel fetchCouponsList Error ${resource.message}")
-                        if (fetchUserData) getUserData(mobileNumber, countryCode)
+//                        if (fetchUserData) getUserData(mobileNumber, countryCode)
                     }
                 }
             }
@@ -411,6 +411,46 @@ class MainViewModel(
                             message = resource.message
                         )
                         println("620555 MainViewModel updateCoupon Error ${resource.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun getCarouselImages() {
+        viewModelScope.launch {
+            repository.getCarouselImages().collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(
+                            /*loadingScreenState = LoadingScreenState(
+                                isLoading = true,
+                                screen = ZConstants.GET_CAROUSEL_IMAGES
+                            )*/
+                        )
+                        println("620555 MainViewModel getCarouselImages Loading...")
+                    }
+
+                    is Resource.Success -> {
+                        _state.value = _state.value.copy(
+                            /*loadingScreenState = LoadingScreenState(
+                                isLoading = false,
+                                screen = ZConstants.GET_CAROUSEL_IMAGES
+                            ),*/
+                            carouselImagesList = resource.data?.body ?: arrayListOf()
+                        )
+                        println("620555 MainViewModel getCarouselImages Success ${resource.data}")
+                    }
+
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            /*loadingScreenState = LoadingScreenState(
+                                isLoading = false,
+                                screen = ZConstants.GET_CAROUSEL_IMAGES
+                            ),*/
+                            carouselImagesList = arrayListOf(),
+                        )
+                        println("620555 MainViewModel getCarouselImages Error ${resource.message}")
                     }
                 }
             }
