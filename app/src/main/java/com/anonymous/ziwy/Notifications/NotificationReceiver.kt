@@ -130,7 +130,7 @@ class NotificationReceiver : BroadcastReceiver() {
         )
 
         val builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ziwy_logo)
+            .setSmallIcon(R.drawable.ziwy_logo2)
             .setContentTitle("Looking for some discounts?")
             .setContentText(expiryPrompt)  // Show Prompt here
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
