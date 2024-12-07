@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
@@ -37,6 +38,8 @@ import com.anonymous.ziwy.Utilities.ZColors.grey
 
 @Composable
 fun CarouselRow(state: MainStore) {
+    val uriHandler = LocalUriHandler.current
+
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -48,7 +51,7 @@ fun CarouselRow(state: MainStore) {
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             state.carouselImagesList.forEachIndexed { index, carousel ->
-                CarouselItem(carousel)
+                CarouselItem(carousel, uriHandler)
             }
         }
 
@@ -73,10 +76,7 @@ fun CarouselRow(state: MainStore) {
 }
 
 @Composable
-fun CarouselItem(carousel: Carousel) {
-
-    val uriHandler = LocalUriHandler.current
-
+fun CarouselItem(carousel: Carousel, uriHandler: UriHandler) {
     Card(
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.elevatedCardElevation(),
