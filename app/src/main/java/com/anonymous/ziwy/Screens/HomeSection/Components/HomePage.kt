@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.anonymous.ziwy.GenericComponents.ZDialogDropdown
@@ -73,6 +73,10 @@ fun HomePage(
     val brandList = listOf("All Brands") + state.couponsList
         .mapNotNull { it.couponBrand }.distinct()
 
+    LaunchedEffect(Unit) {
+        viewModel.getCarouselImages()
+    }
+
     Scaffold(
         topBar = { WelcomeHeader(state) },
         containerColor = transparent
@@ -124,7 +128,7 @@ fun HomePage(
                 )
             }
             //Animated Strip
-            AnimatedVisibility(
+            /*AnimatedVisibility(
                 visible = !state.isEmailSynced,
                 enter = fadeIn() + slideInVertically { +it / 2 },
                 exit = fadeOut() + slideOutVertically { +it / 2 }
@@ -135,7 +139,7 @@ fun HomePage(
                 ) {
                     SignInToGoogleStrip(state)
                 }
-            }
+            }*/
 
         }
     }

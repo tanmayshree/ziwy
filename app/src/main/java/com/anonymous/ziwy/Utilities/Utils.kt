@@ -350,11 +350,11 @@ object Utils {
     }
 
     @Composable
-    fun transitionColor(): Color {
+    fun transitionColor(targetValue: Color = grey): Color {
         val infiniteTransition = rememberInfiniteTransition(label = "")
         val color by infiniteTransition.animateColor(
             initialValue = lightGrey,
-            targetValue = grey,
+            targetValue = targetValue,
             animationSpec = infiniteRepeatable(
                 animation = tween(1000, easing = LinearEasing),
                 repeatMode = RepeatMode.Reverse
