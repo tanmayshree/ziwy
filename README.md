@@ -20,6 +20,9 @@
 ## Version 2.0.3 - 30 Nov, 2024
 - Added carousel in homepage, fixes
 
+## Version 2.0.4 - 09 Dec, 2024
+- Bug Fixes
+
 [//]: # (- Added functionality to import offers from gmail using google sign in.)
 
 [//]: # (- Added firebase analytics for tracking logs and crashes.)
