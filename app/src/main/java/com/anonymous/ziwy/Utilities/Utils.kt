@@ -121,7 +121,7 @@ object Utils {
 
     fun handleGoogleSignInIntent(intent: Intent): Boolean {
         println("620555 - Utils - handleGoogleSignInIntent - ${intent.data}")
-        val ans =  intent.data?.let {
+        val ans = intent.data?.let {
             it.path?.startsWith("/oauth2callback") == true
         } ?: false
 
@@ -341,7 +341,8 @@ object Utils {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             val versionName = packageInfo.versionName
             val versionCode =
-                packageInfo.longVersionCode.toInt()  // Use `.versionCode` for API levels below 28
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) packageInfo.longVersionCode.toInt() else
+                    packageInfo.versionCode // Use `.versionCode` for API levels below 28
             Pair(versionName, versionCode)
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
